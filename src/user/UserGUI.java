@@ -7,16 +7,19 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserGUI extends JFrame{
+public class UserGUI extends JFrame{ // 사용자 프로필이 뜨는 화면 구현 
+	
 	private JLabel usernameLabel; // 프로필 이름 라벨
     private JButton editProfileButton; // 프로필 이름 편집 버튼
     private JButton startChatButton; // 채팅 시작 버튼 
     private JButton chatRoomListButton; // 채팅방 목록 버튼
 
-    private User user;
-    private ChatRoom chatroom;
     private boolean isSelfProfile;
+    
+    private User user;
+    private ChatRoom chatroom; 
     private ChatroomDAO chatroomDAO;
+    private List<ChatRoom> roomlist; 
 
     public UserGUI(User user, boolean isSelfProfile) throws SQLException {
         this.user = user;
@@ -81,14 +84,15 @@ public class UserGUI extends JFrame{
     
     private void openWaitingRoomGUI(User user) {
     	 // 현재 사용자가 속한 채팅방 목록을 가져옴
-    	int chatRooms = chatroomDAO.searchRoomId(user.getUserId());
-        //new WaitingRoomGUI(chatRooms, user).setVisible(true); // 채팅방 목록과 사용자 정보를 포함하여 WaitingRoomGUI 열기
+    	List<ChatRoom> roomlist = chatroomDAO.searchRoomList(user.getUserId());
+    	
+        new WaitingRoomGUI(roomlist, user).setVisible(true); // 채팅방 목록과 사용자 정보를 포함하여 WaitingRoomGUI 열기
     }
 
     private void openEditProfileDialog() {
         String newUsername = JOptionPane.showInputDialog(this, "프로필 수정하기:");
         if (newUsername != null && !newUsername.isEmpty()) {
-            user.setUsername(newUsername);
+            // Users 테이블에 update 하는 함수 생성 
             usernameLabel.setText("프로필 이름: " + newUsername);
         }
     }
@@ -102,24 +106,27 @@ public class UserGUI extends JFrame{
         dispose(); // 현재 창 닫기
     }
 
-    public static void main(String[] args) throws SQLException {
-
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                User user = new User("khj", "khj", "123", 1);
-                
-                UserGUI userGUI;
-				try {
-					userGUI = new UserGUI(user, true);
-					userGUI.setVisible(true);
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-                
-            }
-        });
-    }
+//    public static void main(String[] args) throws SQLException {
+//
+//        SwingUtilities.invokeLater(new Runnable() {
+//            public void run() {
+////            	UserDAO userDAO = new UserDAO();
+////     
+////                User user = new User(userDAO.userSearch(null)); // 이 user는 로그인한 user 여야 한다.  
+////                
+//                UserGUI userGUI; // 선언 
+//                
+//				try {
+//					userGUI = new UserGUI(foundUser, true);
+//					userGUI.setVisible(true);
+//				} catch (SQLException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//                
+//            }
+//        });
+//    }
     
 }
 

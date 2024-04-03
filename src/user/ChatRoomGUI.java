@@ -6,37 +6,35 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
 public class ChatRoomGUI extends JFrame {
 
-	private JTextPane chatPane;
-	private JTextField messageField;
-	private JButton sendButton;
-	private JLabel titleLabel; // 채팅방 제목
+	private JTextPane chatPane; // 채팅 영역 
+	private JTextField messageField; // 메시지 입력 
+	private JButton sendButton; // 메시지 전송 
+	private JLabel titleLabel; // 채팅방 제목 
+	private Component searchButton; // 대화내용 일자별 검색 
+	private StyledDocument doc;
 
 	private User currentUser;
 	private int roomId;
 	
 	private MessageDAO messageDAO;
+	private ChatRoom chatroom;
 
 	public ChatRoomGUI(User user, int roomId) {
 		this.currentUser = user;
 		this.roomId = roomId; 
 		
-		// 채팅방 대화 내용을 불러오는 로직 구현
+		// 채팅방 대화 내용을 불러오는 로직 구현 (select) 
 		
-		initializeUI();
+		//initializeUI();
 		loadMessages();
 		
-		// TestData에서 채팅방 대화 내용 불러오기
-	    List<String> messages = TestData.getChatMessages(roomId);
-	    for (String message : messages) {
-	        boolean isSelf = message.startsWith(user.getUserId() + ":");
-	        displayMessage(message, isSelf);
-	    }
 		
 		setTitle("Chat Room");
 		setSize(400, 600);
@@ -96,7 +94,7 @@ public class ChatRoomGUI extends JFrame {
 		});
 		panel.add(sendButton);
 
-		// 대화 내용 검색 버튼 설정
+		// 대화 내용 검색 버튼 설정 (select) 
 		searchButton = new JButton("검색");
 		searchButton.setBounds(10 + titleLabel.getWidth() - 80, 10, 60, 30); // titleLabel의 x좌표 + titleLabel의 폭 - 버튼의 폭
 		panel.add(searchButton);
@@ -109,11 +107,10 @@ public class ChatRoomGUI extends JFrame {
 	public void loadMessages() {
 		List<String> messages = messageDAO.searchMessage(currentUser.getRoomId()); // 데이터베이스에서 user의 채팅방 번호를 찾아서 메시지를 불러옴
 		for (String message : messages) {
-	        // 메시지를 채팅 창에 표시하는 로직 구현
+	        // 메시지를 채팅 창에 표시하는 로직 구현 (select) 
 	    }
 	}
 	
-	@Override
 	public void displayMessage(String message, boolean isSelf) {
 		SwingUtilities.invokeLater(() -> {
 			try {
@@ -135,7 +132,6 @@ public class ChatRoomGUI extends JFrame {
 		});
 	}
 
-	@Override
 	public void displayMessage(String message) {
 		// TODO Auto-generated method stub
 
@@ -149,18 +145,15 @@ public class ChatRoomGUI extends JFrame {
 		}
 	}
 
-	public static void main(String[] args) {
-		SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				// 테스트용 User 객체 생성
-				User user = new User("khj", "123", "admin", "test@example.com");
-				// 채팅방 ID 설정 (예제로 "room1"을 사용)
-				String roomId = "room1";
-				// ChatRoomGUI 인스턴스 생성 시, User 객체와 roomId 전달
-				new ChatRoomGUI(user, roomId);
-			}
-		});
-	}
+//	public static void main(String[] args) {
+//		SwingUtilities.invokeLater(new Runnable() {
+//			@Override
+//			public void run() {
+//				
+//				// ChatRoomGUI 인스턴스 생성 시, User 객체와 roomId 전달
+//				new ChatRoomGUI(user, roomId);
+//			}
+//		});
+//	}
 
 }

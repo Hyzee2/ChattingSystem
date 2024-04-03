@@ -8,7 +8,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MessageDAO {
+public class MessageDAO { // Message 테이블과의 연동 관리 
 	Connection conn;
 	PreparedStatement pstmt; // prepared
 	
@@ -18,7 +18,7 @@ public class MessageDAO {
 	private static final String SELECT_ROOM_MESSAGE = "select content from Message where roomId = ? order by messageId asc";
 	
 	public MessageDAO() throws SQLException {
-		this("jdbc:mysql://localhost:3306/mychat?serverTimezone=UTC", "root", "qwe123!@#");
+		this("jdbc:mysql://localhost:3306/mychat?serverTimezone=UTC", "root", "375@hyunji");
 		// 아래 생성자 이용
 		System.out.println("DB 연결에 성공했습니다.");
 	}

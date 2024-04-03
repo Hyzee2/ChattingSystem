@@ -14,7 +14,7 @@ public class WaitingRoomGUI extends JFrame {
     private User currentUser;
     private UserDAO userDAO;
     
-    public WaitingRoomGUI(List<String> chatRooms, User currentUser) {
+    public WaitingRoomGUI(List<ChatRoom> roomlist, User currentUser) {
     	this.currentUser = currentUser;
 
         setTitle("채팅 목록 - " + currentUser.getUserId());
@@ -22,7 +22,7 @@ public class WaitingRoomGUI extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
         // 채팅방 목록을 표시하는 JList를 초기화하고 채팅방 목록을 설정
-        chatRoomList = new JList<>(chatRooms.toArray(new String[0]));
+        chatRoomList = new JList<>(roomlist.toArray(new String[0]));
         add(new JScrollPane(chatRoomList), BorderLayout.CENTER);
 
         // 채팅방 목록에서 항목을 더블클릭했을 때의 이벤트 처리
