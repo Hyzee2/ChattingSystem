@@ -50,7 +50,7 @@ public class UserGUI extends JFrame{ // 사용자 프로필이 뜨는 화면 구
             editProfileButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    openEditProfileDialog(); // 프로필 편집 메소드 호출 
+                    openEditProfileDialog(user); // 프로필 편집 메소드 호출 
                 }
             });
             panel.add(editProfileButton);
@@ -89,7 +89,7 @@ public class UserGUI extends JFrame{ // 사용자 프로필이 뜨는 화면 구
         new WaitingRoomGUI(roomlist, user).setVisible(true); // 채팅방 목록과 사용자 정보를 포함하여 WaitingRoomGUI 열기
     }
 
-    private void openEditProfileDialog() {
+    private void openEditProfileDialog(User user) {
         String newUsername = JOptionPane.showInputDialog(this, "프로필 수정하기:");
         if (newUsername != null && !newUsername.isEmpty()) {
             // Users 테이블에 update 하는 함수 생성 
