@@ -6,7 +6,7 @@ class User {
     private String password;
     private String nickname;
     private String email;
-    private List<Friend> friends;
+    private List<Friend> friends = new ArrayList<>();
 
     public User(String userId, String password, String nickname, String email) {
         this.userId = userId;
@@ -50,15 +50,39 @@ class User {
 		this.email = email;
 	}
 
+	// 친구를 추가하는 메서드
 	public void addFriend(User friendUser) {
-        Friend friend = new Friend(this, friendUser);
-        this.friends.add(friend);
-        friendUser.friends.add(friend);
+		// 이미 친구인지 확인
+        for (Friend friend : friends) {
+            if (friend.involvesUser(friendUser)) {
+                return; // 이미 친구면 추가하지 않음
+            }
+        }
+        // 새로운 친구 관계를 추가
+        friends.add(new Friend(this, friendUser));
     }
 
-    public List<Friend> getFriends() {
-        return friends;
+
+	// 이 사용자의 친구 목록을 가져오는 메서드
+    public List<User> getFriends() {
+        List<User> friendUsers = new ArrayList<>();
+        for (Friend friend : friends) {
+            if (friend.getUser1().equals(this)) {
+                friendUsers.add(friend.getUser2());
+            } else if (friend.getUser2().equals(this)) {
+                friendUsers.add(friend.getUser1());
+            }
+        }
+        return friendUsers;
     }
 
-    // 다른 기능들을 추가할 수 있음
+    // 주어진 ID나 닉네임으로 친구를 찾는 메서드 (예시, 실제 구현 필요)
+    public User findUserByIdOrNickname(String input) {
+        for (User friend : getFriends()) {
+            if (friend.getUserId().equals(input) || friend.getNickname().equals(input)) {
+                return friend;
+            }
+        }
+        return null; // 찾지 못했으면 null 반환
+    }
 }

@@ -1,4 +1,4 @@
-package user;
+package backup;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,15 +10,7 @@ public class ChatRoom {
     private List<MessageReceiver> messageReceivers; // 메시지 수신자 리스트 추가
     private User currentUser; // ChatRoomGUI에서 설정할 현재 사용자
 
-    public String getRoomId() {
-		return roomId;
-	}
-
-	public void setRoomId(String roomId) {
-		this.roomId = roomId;
-	}
-
-	public ChatRoom(String roomId) {
+    public ChatRoom(String roomId) {
         this.roomId = roomId;
         this.participants = new ArrayList<>();
         this.messageReceivers = new ArrayList<>(); // 초기화

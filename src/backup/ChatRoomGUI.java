@@ -1,4 +1,4 @@
-package user;
+package backup;
 
 import javax.swing.*;
 import javax.swing.text.BadLocationException;
@@ -135,7 +135,7 @@ public class ChatRoomGUI extends JFrame implements MessageReceiver {
 			@Override
 			public void run() {
 				// 테스트용 User 객체 생성
-				User user = new User("khj", "123", "admin", "test@example.com");
+				User user = new User("testUser", "password", "TestUser", "test@example.com");
 				// 채팅방 ID 설정 (예제로 "room1"을 사용)
 				String roomId = "room1";
 				// ChatRoomGUI 인스턴스 생성 시, User 객체와 roomId 전달
