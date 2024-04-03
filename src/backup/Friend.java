@@ -1,4 +1,4 @@
-package user;
+package backup;
 
 public class Friend {
 	private User user1;

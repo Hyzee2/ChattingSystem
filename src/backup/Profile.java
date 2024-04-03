@@ -1,4 +1,4 @@
-package user;
+package backup;
 
 public class Profile {
 	 private User user;
