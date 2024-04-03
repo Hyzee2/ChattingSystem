@@ -1,7 +1,10 @@
 package user;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class TestData {
 
@@ -19,7 +22,7 @@ public class TestData {
 		// 예시: User1과 User2가 서로 친구
 		users.get(0).addFriend(users.get(1));
 
-		users.get(5).addFriend(users.get(1));
+		users.get(4).addFriend(users.get(0)); // 인덱스는 0~4까지 존재 
 	}
 
 	public static void setUsers(List<User> users) {
@@ -40,4 +43,31 @@ public class TestData {
 		}
 		return null; // 해당 사용자가 없는 경우 null 반환
 	}
+	
+	private static Map<String, List<String>> userChatRooms = new HashMap<>();
+    static {
+        // khj 사용자에게 room1 채팅방 할당
+        userChatRooms.put("khj", Arrays.asList("room1"));
+    }
+
+    public static List<String> getUserChatRooms(String userId) {
+        return userChatRooms.getOrDefault(userId, new ArrayList<>());
+    }
+    
+    // 채팅방 ID와 해당 채팅방의 대화 내용을 매핑하는 Map
+    private static Map<String, List<String>> chatMessages = new HashMap<>();
+    static {
+        chatMessages.put("room1", Arrays.asList(
+            "user1: 안녕하세요!",
+            "khj: 여러분 안녕하세요, khj입니다.",
+            "user2: 오늘도 좋은 하루 되세요!"
+        ));
+    }
+
+ 	// 채팅방 ID에 따른 대화 내용 리스트를 반환하는 메소드
+    public static List<String> getChatMessages(int roomId) {
+        return chatMessages.getOrDefault(roomId, Arrays.asList("대화 내용이 없습니다."));
+    }
+
+	
 }

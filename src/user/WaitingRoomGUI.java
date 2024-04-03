@@ -12,9 +12,36 @@ public class WaitingRoomGUI extends JFrame {
     private JButton addFriendButton; // '친구 추가' 버튼
     private WaitingRoom waitingRoom; // WaitingRoom 인스턴스
     private User currentUser;
+    private UserDAO userDAO;
+    
+    public WaitingRoomGUI(List<String> chatRooms, User currentUser) {
+    	this.currentUser = currentUser;
 
-    public WaitingRoomGUI(WaitingRoom waitingRoom, User currentUser) {
-        this.waitingRoom = waitingRoom;
+        setTitle("채팅 목록 - " + currentUser.getUserId());
+        setSize(400, 600);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(new BorderLayout());
+        // 채팅방 목록을 표시하는 JList를 초기화하고 채팅방 목록을 설정
+        chatRoomList = new JList<>(chatRooms.toArray(new String[0]));
+        add(new JScrollPane(chatRoomList), BorderLayout.CENTER);
+
+        // 채팅방 목록에서 항목을 더블클릭했을 때의 이벤트 처리
+        chatRoomList.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2) { // 더블 클릭 이벤트 처리
+                    String selectedRoomId = chatRoomList.getSelectedValue();
+                    // 선택된 채팅방으로 들어가기 위해 ChatRoomGUI 인스턴스 생성
+                    new ChatRoomGUI(currentUser, selectedRoomId).setVisible(true);
+                }
+            }
+        });
+        
+        setVisible(true);
+    }
+
+    public WaitingRoomGUI(WaitingRoom chatRooms, User currentUser) {
+        this.waitingRoom = chatRooms;
         this.currentUser = currentUser;
         
         setTitle("채팅 목록");
@@ -25,12 +52,13 @@ public class WaitingRoomGUI extends JFrame {
 
         chatRoomList = new JList<>();
         updateChatRoomList(); // 채팅방 목록 업데이트
+        
         chatRoomList.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2) { // 더블 클릭 이벤트 처리
                     String selectedRoomId = chatRoomList.getSelectedValue();
-                    ChatRoom selectedRoom = waitingRoom.findChatRoomById(selectedRoomId);
+                    ChatRoom selectedRoom = chatRooms.findChatRoomById(selectedRoomId);
                     if (selectedRoom != null) {
                         new ChatRoomGUI(currentUser, selectedRoom.getRoomId());
                     }
@@ -54,33 +82,35 @@ public class WaitingRoomGUI extends JFrame {
         chatRoomList.setModel(model);
     }
     
-    private void addFriend() {
-        String input = JOptionPane.showInputDialog(this, "친구의 ID 혹은 닉네임 입력:");
+    private User addFriend() { // 수정 필요!
+    	
+        String input = JOptionPane.showInputDialog(this, "친구의 ID 혹은 프로필 이름 입력:");
         if (input != null && !input.isEmpty()) {
             // 입력받은 정보로 친구를 찾아 추가하는 로직 구현
-            // 예시 코드로 DB 연동 부분은 생략되어 있으며, 실제 애플리케이션에서는 DB 조회 로직 필요
-            User friend = currentUser.findUserByIdOrNickname(input);
+            User friend = userDAO.userSearch(input);
             if (friend != null) {
                 currentUser.addFriend(friend);
-                JOptionPane.showMessageDialog(this, friend.getNickname() + "을(를) 친구로 추가했습니다.");
-                // TODO: DB에 친구 관계 추가 로직 구현 필요
+                JOptionPane.showMessageDialog(this, friend.getUsername() + "을(를) 친구로 추가했습니다.");
+                // TODO: FriendDAO 에서 Friend 테이블친구를 추가하는 메서드 실행
+                return friend;
             } else {
                 JOptionPane.showMessageDialog(this, "해당 사용자를 찾을 수 없습니다.");
+                return null;
             }
         }
     }
 
-    // 사용자 ID나 닉네임으로 사용자 찾기 (가상의 메서드, 실제 DB 연동 필요)
-//    private User findUserByIdOrNickname(String input) {
-//        // 이 메서드는 사용자 입력을 받아 해당하는 User 객체를 반환하도록 구현해야 함
-//        // 여기서는 예시로, 입력값과 일치하는 User 객체를 반환하는 간단한 로직만 제시
-//        for (User user : getUsersFromDB()) { // getUsersFromDB()는 모든 사용자를 반환하는 가상의 메서드
-//            if (user.getUserId().equals(input) || user.getNickname().equals(input)) {
-//                return user;
-//            }
-//        }
-//        return null; // 찾지 못했을 때 null 반환
-//    }
+    //사용자 ID나 닉네임으로 사용자 찾기 (가상의 메서드, 실제 DB 연동 필요)
+    private User findUserByIdOrNickname(String input) {
+        // 이 메서드는 사용자 입력을 받아 해당하는 User 객체를 반환하도록 구현해야 함
+        // 여기서는 예시로, 입력값과 일치하는 User 객체를 반환하는 간단한 로직만 제시
+        for (User user : getUsersFromDB()) { // getUsersFromDB()는 모든 사용자를 반환하는 가상의 메서드
+            if (user.getUserId().equals(input) || user.getUsername().equals(input)) {
+                return user;
+            }
+        }
+        return null; // 찾지 못했을 때 null 반환
+    }
 
     // DB에서 모든 사용자를 가져오는 가상의 메서드 (실제 DB 연동 로직 필요)
     private List<User> getUsersFromDB() {

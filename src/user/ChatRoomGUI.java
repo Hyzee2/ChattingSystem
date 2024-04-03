@@ -8,25 +8,36 @@ import javax.swing.text.StyledDocument;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
-public class ChatRoomGUI extends JFrame implements MessageReceiver {
+public class ChatRoomGUI extends JFrame {
 
 	private JTextPane chatPane;
-	private StyledDocument doc;
 	private JTextField messageField;
 	private JButton sendButton;
-	private JButton searchButton;
 	private JLabel titleLabel; // 채팅방 제목
 
-	private ChatRoom chatroom;
 	private User currentUser;
+	private int roomId;
+	
+	private MessageDAO messageDAO;
 
-	public ChatRoomGUI(User user, String roomId) {
+	public ChatRoomGUI(User user, int roomId) {
 		this.currentUser = user;
-		this.chatroom = new ChatRoom(roomId); // roomId를 사용하여 ChatRoom 초기화
-		this.chatroom.addParticipant(user); // 현재 사용자를 참여자로 추가
-		this.chatroom.setCurrentUser(user); // 현재 사용자 설정
-
+		this.roomId = roomId; 
+		
+		// 채팅방 대화 내용을 불러오는 로직 구현
+		
+		initializeUI();
+		loadMessages();
+		
+		// TestData에서 채팅방 대화 내용 불러오기
+	    List<String> messages = TestData.getChatMessages(roomId);
+	    for (String message : messages) {
+	        boolean isSelf = message.startsWith(user.getUserId() + ":");
+	        displayMessage(message, isSelf);
+	    }
+		
 		setTitle("Chat Room");
 		setSize(400, 600);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -41,7 +52,7 @@ public class ChatRoomGUI extends JFrame implements MessageReceiver {
 
 		// 채팅방 제목 설정
 		titleLabel = new JLabel();
-		titleLabel.setText(user.getNickname() + " 님과의 대화방");
+		titleLabel.setText(user.getUsername() + " 님과의 대화방");
 		titleLabel.setBounds(10, 10, 380, 30);
 		titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		panel.add(titleLabel);
@@ -77,7 +88,8 @@ public class ChatRoomGUI extends JFrame implements MessageReceiver {
 				if (!messageText.isEmpty()) {
 					// 현재 사용자가 보낸 메시지를 채팅 영역에 표시
 					displayMessage(messageText + " : 나", true); // 수정: 'true'는 메시지가 자신에 의해 보내졌음을 의미
-					// TODO: 실제 채팅 시스템에서는 여기에 메시지를 서버나 다른 클라이언트에 전송하는 코드가 필요
+					 // ChatRoom을 통해 메시지 전송
+		            chatroom.sendMessage(currentUser, messageText);
 					messageField.setText(""); // 메시지 필드 클리어
 				}
 			}
@@ -94,6 +106,13 @@ public class ChatRoomGUI extends JFrame implements MessageReceiver {
 		setVisible(true);
 	}
 
+	public void loadMessages() {
+		List<String> messages = messageDAO.searchMessage(currentUser.getRoomId()); // 데이터베이스에서 user의 채팅방 번호를 찾아서 메시지를 불러옴
+		for (String message : messages) {
+	        // 메시지를 채팅 창에 표시하는 로직 구현
+	    }
+	}
+	
 	@Override
 	public void displayMessage(String message, boolean isSelf) {
 		SwingUtilities.invokeLater(() -> {
