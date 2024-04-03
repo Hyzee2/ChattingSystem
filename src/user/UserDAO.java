@@ -7,13 +7,17 @@ import java.util.List;
 public class UserDAO { // Users 테이블과의 연동 관리
 	Connection conn;
 	PreparedStatement pstmt; // prepared
+	
+	private User user;
+	private List<User> users;
 
 	private static final String INSERT_USERS_SQL = "INSERT INTO Users"
-			+ "  (userId, username, password, roomId) VALUES " + " (?, ?, ?, ?);";
+			+ "  (userId, username, password) VALUES " + " (?, ?, ?);";
 	private static final String SELECT_ALL_USERS = "SELECT * FROM Users";
+	private static final String UPDATE_USERNAME = "update Users set username = ? where userId = ?";
 
 	public UserDAO() throws SQLException {
-		this("jdbc:mysql://localhost:3306/mychat?serverTimezone=UTC", "root", "qwe123!@#");
+		this("jdbc:mysql://localhost:3306/mychat?serverTimezone=UTC", "root", "375@hyunji");
 		// 아래 생성자 이용
 		System.out.println("DB 연결에 성공했습니다.");
 	}
@@ -30,46 +34,57 @@ public class UserDAO { // Users 테이블과의 연동 관리
 		}
 	}
 
-	public List<User> selectAllUsers() {
-		List<User> users = new ArrayList<>();
-		try (PreparedStatement preparedStatement = conn.prepareStatement(SELECT_ALL_USERS)) {
-			ResultSet rs = preparedStatement.executeQuery();
+	public List<User> selectAllUsers() { // Users 테이블에 있는 user 데이터 배열로 불러오기 
+		List<User> users;
+		
+		users = new ArrayList<>(); // add() 기능을 사용하기 위해 ArrayList로 다시 객체 생성 
+		
+		try (PreparedStatement pstmt = conn.prepareStatement(SELECT_ALL_USERS)) {
+			ResultSet rs = pstmt.executeQuery();
 
 			while (rs.next()) {
 				String userId = rs.getString("userId");
 				String username = rs.getString("username");
 				String password = rs.getString("password");
-				int roomId = rs.getInt("roomId");
 				
-				users.add(new User(userId, username, password, roomId));
+				users.add(new User(userId, username, password));
 			}
 		} catch (SQLException e) {
 			printSQLException(e);
 		}
-		return users;
+		return this.users = users;
+	}
+	
+	public void updateUsername(String username) { // 여기 수정 필요! 
+		try (PreparedStatement pstmt = conn.prepareStatement(UPDATE_USERNAME)) {
+			pstmt.setString(1, user.setUsername(username));
+			pstmt.setString(2, user.getUserId());
+			pstmt.executeUpdate();
+			
+		}
+
 	}
 
 	public void addUser(User user) {
-		try (PreparedStatement preparedStatement = conn.prepareStatement(INSERT_USERS_SQL)) {
-			preparedStatement.setString(1, user.getUserId());
-			preparedStatement.setString(2, user.getUsername());
-			preparedStatement.setString(3, user.getPassword());
-			preparedStatement.setInt(4, user.getRoomId());
+		try (PreparedStatement pstmt = conn.prepareStatement(INSERT_USERS_SQL)) {
+			pstmt.setString(1, user.getUserId());
+			pstmt.setString(2, user.getUsername());
+			pstmt.setString(3, user.getPassword());
 		
-			preparedStatement.executeUpdate();
+			pstmt.executeUpdate();
 		} catch (SQLException e) {
 			printSQLException(e);
 		}
 	}
 	
-	public User userSearch(String input) { // id 혹은 이름으로 user 찾기 
+	public User userSearch(String input) { // 
 		User user = null;
 	    String sql = "SELECT * FROM Users WHERE userId = ? OR username = ?";
 
-	    try (PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
-	        preparedStatement.setString(1, input);
-	        preparedStatement.setString(2, input);
-	        ResultSet rs = preparedStatement.executeQuery();
+	    try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+	    	pstmt.setString(1, input);
+	    	pstmt.setString(2, input);
+	        ResultSet rs = pstmt.executeQuery();
 
 	        if (rs.next()) {
 	            String userId = rs.getString("userId");
@@ -77,7 +92,7 @@ public class UserDAO { // Users 테이블과의 연동 관리
 	            String password = rs.getString("password");
 	            int roomId = rs.getInt("roomId");
 	        
-	            user = new User(userId, username, password, roomId);
+	            user = new User(userId, username, password);
 	        }
 	    } catch (SQLException e) {
 	        printSQLException(e);

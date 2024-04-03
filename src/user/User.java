@@ -1,20 +1,15 @@
 package user;
-import java.util.*;
 
 class User {
     private String userId;
     private String username;
     private String password;
-    private int roomId;
- 
-    //private List<Friend> friends = new ArrayList<>();  
-
-    public User(String userId, String username, String password, int roomId) {
+  
+    public User(String userId, String username, String password) {
         this.userId = userId;
     	this.username = username;
         this.password = password;
-        this.roomId = roomId;
-        //this.friends = new ArrayList<>(); // User를 생성할 때 친구 배열을 생성한다. 
+
     }
 
     public String getUserId() {
@@ -41,13 +36,7 @@ class User {
 		this.password = password;
 	}
 
-	public int getRoomId() {
-		return roomId;
-	}
-
-	public void setRoomId(int roomId) {
-		this.roomId = roomId;
-	}
+	
 
 	
     
