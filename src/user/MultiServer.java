@@ -10,7 +10,7 @@ public class MultiServer {
 	
 	public MultiServer()throws IOException{
 		list = new ArrayList<MultiServerThread>();
-		ServerSocket serverSocket = new ServerSocket(9002);
+		ServerSocket serverSocket = new ServerSocket(8050);
 		MultiServerThread mst = null;
 		boolean isStop = false;
 		

@@ -3,6 +3,8 @@ package user;
 import java.util.ArrayList;
 import java.util.List;
 
+import backup.MessageReceiver;
+
 public class ChatRoom { 
 	
 	private int roomId;
@@ -79,5 +81,4 @@ public class ChatRoom {
     	    }
     }
     
-    // 다른 필요한 메소드들도 추가할 수 있음
 }
