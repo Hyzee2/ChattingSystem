@@ -17,7 +17,7 @@ public class UserDAO { // Users 테이블과의 연동 관리
 	private static final String UPDATE_USERNAME = "update Users set username = ? where userId = ?";
 
 	public UserDAO() throws SQLException {
-		this("jdbc:mysql://localhost:3306/mychat?serverTimezone=UTC", "root", "375@hyunji");
+		this("jdbc:mysql://localhost:3306/mychat?serverTimezone=UTC", "root", "qwe123!@#");
 		// 아래 생성자 이용
 		System.out.println("DB 연결에 성공했습니다.");
 	}
@@ -55,12 +55,15 @@ public class UserDAO { // Users 테이블과의 연동 관리
 		return this.users = users;
 	}
 	
-	public void updateUsername(String username) { // 여기 수정 필요! 
+	public void updateUsername(String username, User user) { // 프로필 편집 버튼 누르면 Users 테이블에도 update  
+		
 		try (PreparedStatement pstmt = conn.prepareStatement(UPDATE_USERNAME)) {
-			pstmt.setString(1, user.setUsername(username));
-			pstmt.setString(2, user.getUserId());
+			pstmt.setString(1, username);
+			pstmt.setString(2, user.getUserId()); 
 			pstmt.executeUpdate();
 			
+		}catch(SQLException e) {
+			e.printStackTrace();
 		}
 
 	}
@@ -77,27 +80,26 @@ public class UserDAO { // Users 테이블과의 연동 관리
 		}
 	}
 	
-	public User userSearch(String input) { // 
+	public User userSearch(String currentUserId) { // userId로 사용자 객체 반환 
 		User user = null;
-	    String sql = "SELECT * FROM Users WHERE userId = ? OR username = ?";
+	    String sql = "SELECT * FROM Users WHERE userId = ?";
 
 	    try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-	    	pstmt.setString(1, input);
-	    	pstmt.setString(2, input);
+	    	pstmt.setString(1, currentUserId);
+	
 	        ResultSet rs = pstmt.executeQuery();
 
 	        if (rs.next()) {
 	            String userId = rs.getString("userId");
 	            String username = rs.getString("username");
 	            String password = rs.getString("password");
-	            int roomId = rs.getInt("roomId");
 	        
 	            user = new User(userId, username, password);
 	        }
 	    } catch (SQLException e) {
 	        printSQLException(e);
 	    }
-	    return user; // id 혹은 이름을 입력받아서 친구인 사용자를 찾아서 반환해준다. 
+	    return this.user = user; 
 	}
 
 	private void printSQLException(SQLException ex) {

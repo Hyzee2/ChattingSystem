@@ -28,7 +28,7 @@ public class LoginGUI extends JFrame { // 로그인 창 만들기
 		
 		this.userDAO = new UserDAO();
 		
-		this.users = this.userDAO.selectAllUsers();
+		//this.users = this.userDAO.selectAllUsers();
 
 		JPanel panel = new JPanel();
 		panel.setLayout(new GridLayout(4, 1));
@@ -79,7 +79,7 @@ public class LoginGUI extends JFrame { // 로그인 창 만들기
 
 		// 사용자가 입력한 userID와 password를 이용하여 회원 정보를 찾음
 		User foundUser = null;
-		this.users = this.userDAO.selectAllUsers();
+		this.users = this.userDAO.selectAllUsers(); // 로그인 하기 전에 Users db에서 회원 정보 끌어오기 
 		
 		for (User user : users) {
 			if (user.getUserId().equals(userID) && user.getPassword().equals(password)) {
