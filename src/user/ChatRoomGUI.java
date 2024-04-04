@@ -22,10 +22,11 @@ public class ChatRoomGUI extends JFrame {
 	private JTextField messageField; // 메시지 입력
 	private JButton sendButton; // 메시지 전송
 	private JLabel titleLabel; // 채팅방 제목
-	private Component searchButton; // 대화내용 일자별 검색
+	private JButton searchButton; // 대화내용 일자별 검색
 	private StyledDocument doc;
 
 	private User currentUser;
+	private String senderId;
 	private boolean isSelf;
 	private int roomId;
 	private String roomname;
@@ -84,12 +85,14 @@ public class ChatRoomGUI extends JFrame {
 		this.chatroomDAO = new ChatroomDAO();
 		this.userDAO = new UserDAO();
 
+		this.senderId = this.currentUser.getUserId();
+
 		try {
 			initNetwork();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} // 서버와의 연결 
+		} // 서버와의 연결
 		loadMessages(selectedRoomname); // 채팅방에 대화내용 불러오기
 
 		setTitle("Chat Room");
@@ -106,7 +109,7 @@ public class ChatRoomGUI extends JFrame {
 
 		// 채팅방 제목 설정
 		titleLabel = new JLabel();
-		titleLabel.setText(currentUser.getUsername() + " 님과의 대화방");
+		titleLabel.setText(selectedRoomname);
 		titleLabel.setBounds(10, 10, 380, 30);
 		titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		panel.add(titleLabel);
@@ -145,7 +148,7 @@ public class ChatRoomGUI extends JFrame {
 					// ChatRoom을 통해 메시지 전송
 					chatroom.sendMessage(currentUser, messageText);
 					try {
-						sendChatting();
+						sendChatting(roomId, senderId);
 					} catch (SQLException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
@@ -159,6 +162,12 @@ public class ChatRoomGUI extends JFrame {
 		// 대화 내용 검색 버튼 설정 (select)
 		searchButton = new JButton("검색");
 		searchButton.setBounds(10 + titleLabel.getWidth() - 80, 10, 60, 30); // titleLabel의 x좌표 + titleLabel의 폭 - 버튼의 폭
+		searchButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// 메시지 일자별로 내용 조회하는 로직 (리스트 형태로 보여줌) 
+			}
+		});
 		panel.add(searchButton);
 		panel.add(searchButton);
 
@@ -183,6 +192,7 @@ public class ChatRoomGUI extends JFrame {
 		List<String> senderIds = messageDAO.searchSender(roomId);
 		// 내 아이디만 조회
 		String isSelfId = currentUser.getUserId();
+
 		// if(for-each구문으로 비교) isSelf = true;
 		SwingUtilities.invokeLater(() -> {
 			try {
@@ -197,7 +207,7 @@ public class ChatRoomGUI extends JFrame {
 						StyleConstants.setAlignment(attrs, StyleConstants.ALIGN_LEFT);
 					}
 				}
-				
+
 				int len = doc.getLength(); // 문서의 현재 길이 가져오기
 				doc.insertString(doc.getLength(), message + "\n", attrs);
 				doc.setParagraphAttributes(doc.getLength() - 1, 1, attrs, false);
@@ -208,40 +218,30 @@ public class ChatRoomGUI extends JFrame {
 		});
 	}
 
-	private void sendChatting() throws SQLException { // 사용자가 채팅창에서 입력한 값을 보내는 메소드 
+	private void sendChatting(int roomId, String senderId) throws SQLException { // 사용자가 채팅창에서 입력한 값을 보내는 메소드
 		String messageText = messageField.getText();
+
 		if (!messageText.isEmpty()) {
 			chatroom.sendMessage(currentUser, messageText);
 			messageField.setText("");
 		}
 		// db에 채팅 데이터를 insert 하는 로직
-		//this.chatroomDAO.inputChatRoom(roomname, currentUser); // 이거는 채팅방을 새로 만들었을 때 사용하는 로직...
+		messageDAO.inputMessage(messageText, roomId, senderId);
+		
 	}
 
 	public void initNetwork() throws IOException {
-		socket = new Socket("192.168.0.71", 8050);
+		socket = new Socket("127.0.0.1", 8050); //127.0.0.1  //192.168.0.71
 		System.out.println("connected...");
 		oos = new ObjectOutputStream(socket.getOutputStream());
 		ois = new ObjectInputStream(socket.getInputStream());
-		MultiClientThread ct = new MultiClientThread(this); // ChatRoomGUI를 받기 위해 this를 사용한다. 
+		MultiClientThread ct = new MultiClientThread(this); // ChatRoomGUI를 받기 위해 this를 사용한다.
 		Thread t = new Thread(ct);
 		t.start();
 	}
-	
-	public void exit(){
-        System.exit(0);
-    }
-	
-	
-//	public static void main(String args[]) throws IOException {
-//        JFrame.setDefaultLookAndFeelDecorated(true);
-//        try {
-//			ChatRoomGUI cr = new ChatRoomGUI(currentUser, roomname, true);
-//		} catch (SQLException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//        
-//    }
+
+	public void exit() {
+		System.exit(0);
+	}
 
 }

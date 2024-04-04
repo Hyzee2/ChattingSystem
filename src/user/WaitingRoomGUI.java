@@ -12,17 +12,23 @@ import java.util.List;
 public class WaitingRoomGUI extends JFrame {
 	private JList<String> chatRoomList; // 채팅방 목록을 표시하는 컴포넌트
 	private JButton addFriendButton; // '친구 추가' 버튼
-	private WaitingRoom waitingRoom; // WaitingRoom 인스턴스
+	private JButton friendsListButton; // '친구 목록' 버튼 
+	private JButton createChatRoomButton; // '채팅방 생성' 버튼
+	private JButton refreshButton; // '새로고침' 버튼
+
+
 	private User currentUser;
 	private boolean isSelf;
 	private UserDAO userDAO;
 	private ChatroomDAO chatroomDAO;
+	private List<String> roomlist;
 
 	public WaitingRoomGUI(List<String> roomlist, User currentUser, boolean isSelf) throws SQLException {
 		this.currentUser = currentUser;
 		this.isSelf = isSelf;
 		this.chatroomDAO = new ChatroomDAO();
 		this.userDAO = new UserDAO();
+		this.roomlist = roomlist;
 
 		setTitle("채팅 목록 - " + currentUser.getUserId());
 		setSize(400, 600);
@@ -40,92 +46,115 @@ public class WaitingRoomGUI extends JFrame {
 					String selectedRoomname = chatRoomList.getSelectedValue(); // 수정 필요
 					// 선택된 채팅방으로 들어가기 위해 ChatRoomGUI 인스턴스 생성
 					try {
-						new ChatRoomGUI(currentUser, selectedRoomname, isSelf).setVisible(true);
+						new ChatRoomGUI(currentUser, selectedRoomname, true).setVisible(true);
 					} catch (SQLException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
+						JOptionPane.showMessageDialog(null, "에러 발생: " + e1.getMessage());
 					}
 				}
 			}
 		});
+		
+		// '채팅방 생성' 버튼 추가 
+		createChatRoomButton = new JButton("채팅방 생성");
+	    createChatRoomButton.addActionListener(new ActionListener() {
+	        @Override
+	        public void actionPerformed(ActionEvent e) {
+	            createChatRoom();
+	         
+	        }
+	    
+	      
+	    });
+	    
+	    refreshButton = new JButton("새로고침");
+	    refreshButton.addActionListener(new ActionListener() {
+	        @Override
+	        public void actionPerformed(ActionEvent e) {
+	            try {
+					refreshChatRoomList();
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+					
+				}
+	        }
+	    });
+	    
+	    
+		
+		// '친구 추가' 버튼 추가
+	    addFriendButton = new JButton("친구 추가");
+	    addFriendButton.addActionListener(new ActionListener() {
+	        @Override
+	        public void actionPerformed(ActionEvent e) {
+	            String friendId = JOptionPane.showInputDialog("친구의 ID를 입력하세요:");
+	            if (friendId != null && !friendId.isEmpty()) {
+	                if (userDAO.existsUser(friendId)) {
+					    userDAO.addFriend(currentUser.getUserId(), friendId);
+					    JOptionPane.showMessageDialog(null, "친구가 추가되었습니다.");
+					} else {
+					    JOptionPane.showMessageDialog(null, "입력하신 ID는 없습니다.");
+					}
+	            }
+	        }
+	    });
+
+	    // '친구 목록' 버튼 추가
+	    friendsListButton = new JButton("친구 목록");
+	    friendsListButton.addActionListener(new ActionListener() {
+	        @Override
+	        public void actionPerformed(ActionEvent e) {
+	            List<String> friendsList = userDAO.getFriends(currentUser.getUserId());
+				JOptionPane.showMessageDialog(null, "친구 목록: " + String.join(", ", friendsList));
+	        }
+	    });
+
+	    // 상단 패널에 버튼을 추가
+	    JPanel topPanel = new JPanel();
+	    topPanel.setLayout(new FlowLayout(FlowLayout.LEFT)); // 왼쪽 정렬을 위해 FlowLayout 사용
+	    topPanel.add(createChatRoomButton); // '채팅방 생성' 버튼 추가
+	    topPanel.add(refreshButton);
+	    topPanel.add(addFriendButton); // '친구 추가' 버튼 추가
+	    topPanel.add(friendsListButton); // '친구 목록' 버튼 추가
+	    getContentPane().add(topPanel, BorderLayout.NORTH); // 상단 패널을 프레임의 북쪽에 추가
 
 		setVisible(true);
 	}
+	
+	private void createChatRoom() {
+	    // 친구 목록 가져오기
+	    List<String> friendsList = userDAO.getFriends(currentUser.getUserId());
+	    JList<String> list = new JList<>(friendsList.toArray(new String[0]));
+	    list.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+	    JOptionPane.showMessageDialog(null, new JScrollPane(list), "친구 선택", JOptionPane.PLAIN_MESSAGE);
+	    
+	    // 선택된 친구들의 userId 가져오기
+	    List<String> selectedFriends = list.getSelectedValuesList();
+	    if (!selectedFriends.isEmpty()) {
+	        // 새 채팅방을 데이터베이스에 추가하고 선택된 친구들을 참여시키는 로직
+	        try {
+	            String newRoomName = JOptionPane.showInputDialog("채팅방 이름 입력:");
+	            if (newRoomName != null && !newRoomName.isEmpty()) {
+	                int newRoomId = chatroomDAO.createChatRoom(newRoomName);
+	                for (String friendId : selectedFriends) {
+	                    chatroomDAO.addParticipantToRoom(newRoomId, friendId);
+	                }
+	                chatroomDAO.addParticipantToRoom(newRoomId, currentUser.getUserId()); // 현재 사용자도 채팅방에 추가
+	                
+	            }
+	        } catch (SQLException ex) {
+	            ex.printStackTrace();
+	        }
+	    }
+	}
+	
+	private void refreshChatRoomList() throws SQLException {
+	    // 채팅방 목록을 다시 조회
+		List<String> updatedRoomList = chatroomDAO.searchRoomList(currentUser.getUserId());
+		chatRoomList.setListData(updatedRoomList.toArray(new String[0]));
+	}
 
-//    public WaitingRoomGUI(WaitingRoom chatRooms, User currentUser) {
-//        this.waitingRoom = chatRooms;
-//        this.currentUser = currentUser;
-//        
-//        setTitle("채팅 목록");
-//        setSize(400, 600);
-//        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//
-//        setLayout(new BorderLayout());
-//
-//        chatRoomList = new JList<>();
-//        updateChatRoomList(); // 채팅방 목록 업데이트
-//        
-//        chatRoomList.addMouseListener(new MouseAdapter() {
-//            @Override
-//            public void mouseClicked(MouseEvent e) {
-//                if (e.getClickCount() == 2) { // 더블 클릭 이벤트 처리
-//                    String selectedRoomId = chatRoomList.getSelectedValue();
-//                    ChatRoom selectedRoom = chatRooms.findChatRoomById(selectedRoomId);
-//                    if (selectedRoom != null) {
-//                        new ChatRoomGUI(currentUser, selectedRoom.getRoomId());
-//                    }
-//                }
-//            }
-//        });
-//        add(new JScrollPane(chatRoomList), BorderLayout.CENTER);
-//
-//        addFriendButton = new JButton("친구 추가");
-//        addFriendButton.addActionListener(e -> addFriend());
-//        add(addFriendButton, BorderLayout.SOUTH);
-//
-//        setVisible(true);
-//    }
-//
-
-//    
-//    private User addFriend() { // 수정 필요!
-//    	
-//        String input = JOptionPane.showInputDialog(this, "친구의 ID 혹은 프로필 이름 입력:");
-//        if (input != null && !input.isEmpty()) {
-//            // 입력받은 정보로 친구를 찾아 추가하는 로직 구현
-//            User friend = userDAO.userSearch(input);
-//            if (friend != null) {
-//                currentUser.addFriend(friend);
-//                JOptionPane.showMessageDialog(this, friend.getUsername() + "을(를) 친구로 추가했습니다.");
-//                // TODO: FriendDAO 에서 Friend 테이블친구를 추가하는 메서드 실행
-//                return friend;
-//            } else {
-//                JOptionPane.showMessageDialog(this, "해당 사용자를 찾을 수 없습니다.");
-//                return null;
-//            }
-//        }
-//    }
-//
-//    //사용자 ID나 닉네임으로 사용자 찾기 (가상의 메서드, 실제 DB 연동 필요)
-//    private User findUserByIdOrNickname(String input) {
-//        // 이 메서드는 사용자 입력을 받아 해당하는 User 객체를 반환하도록 구현해야 함
-//        // 여기서는 예시로, 입력값과 일치하는 User 객체를 반환하는 간단한 로직만 제시
-//        for (User user : getUsersFromDB()) { // getUsersFromDB()는 모든 사용자를 반환하는 가상의 메서드
-//            if (user.getUserId().equals(input) || user.getUsername().equals(input)) {
-//                return user;
-//            }
-//        }
-//        return null; // 찾지 못했을 때 null 반환
-//    }
-//
-//    // DB에서 모든 사용자를 가져오는 가상의 메서드 (실제 DB 연동 로직 필요)
-//    private List<User> getUsersFromDB() {
-//        // 여기서는 예시로, 모든 사용자 목록을 반환하는 간단한 코드만 제공
-//        //List<User> users = new ArrayList<>();
-//        // DB 조회 로직으로 사용자 목록을 가져오는 코드 구현 필요
-//        return TestData.getUsers();    
-//     }
-//    
-//    
 
 }
