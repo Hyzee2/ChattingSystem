@@ -20,11 +20,11 @@ public class ChatroomDAO {
 
 	private static final String SELECT_ROOMLIST = "select roomname from Chatroom where roomId in (select roomId from Participants where userId = ?)";
 	private static final String SELECT_ONE_ROOMID = "SELECT roomId FROM Chatroom where roomname = ?";
-	private static final String INSERT_CHATROOM = "insert into Chatroom values(0, ?)";
+	private static final String INSERT_CHATROOM = "insert into Chatroom (roomname) values(?)";
 	private static final String INSERT_PARTICIPANTS = "insert into Participants values (?,?)";
 
 	public ChatroomDAO() throws SQLException {
-		this("jdbc:mysql://localhost:3306/mychat?serverTimezone=UTC", "root", "qwe123!@#");
+		this("jdbc:mysql://localhost:3306/mychat?serverTimezone=UTC", "root", "375@hyunji");
 		// 아래 생성자 이용
 		System.out.println("DB 연결에 성공했습니다.");
 	}
@@ -76,7 +76,7 @@ public class ChatroomDAO {
 		return this.roomId = targetRoomId;
 	}
 
-	public int inputChatRoom(String roomnamem, User user) throws SQLException { // 채팅방 새로 생성시, Chatroom 테이블과 Participants 테이블에
+	public int inputChatRoom(String roomname, User user) throws SQLException { // 채팅방 새로 생성시, Chatroom 테이블과 Participants 테이블에
 																		// insert
 		int targetRoomId = 0;
 
@@ -100,19 +100,28 @@ public class ChatroomDAO {
 	    }
 	    return targetRoomId; 
 	}
+	
+	public int createChatRoom(String roomname) throws SQLException {
+	    // Chatroom 테이블에 새 채팅방 추가
+	    try (PreparedStatement pstmt = conn.prepareStatement(INSERT_CHATROOM, Statement.RETURN_GENERATED_KEYS)) {
+	        pstmt.setString(1, roomname);
+	        pstmt.executeUpdate();
+	        try (ResultSet rs = pstmt.getGeneratedKeys()) {
+	            if (rs.next()) {
+	                return rs.getInt(1); // 생성된 채팅방 ID 반환
+	            }
+	        }
+	    }
+	    return -1; // 채팅방 생성 실패
+	}
+
+	public void addParticipantToRoom(int roomId, String userId) throws SQLException {
+	    // Participants 테이블에 새 참가자 추가
+	    try (PreparedStatement pstmt = conn.prepareStatement(INSERT_PARTICIPANTS)) {
+	        pstmt.setInt(1, roomId);
+	        pstmt.setString(2, userId);
+	        pstmt.executeUpdate();
+	    }
+	}
+	
 }
-
-	
-
-	
-
-//	public static void main(String[] args) throws SQLException {
-//		ChatroomDAO ch = new ChatroomDAO();
-//		
-//		ch.searchRoomList("khj");
-//		System.out.println(ch.roomlist.toString());
-//		System.out.println(ch.roomlist.size());
-//		for(String roomname : ch.roomlist) {
-//			System.out.println(roomname);
-//		}
-//	}
