@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,12 +17,12 @@ public class MessageDAO { // Message 테이블과의 연동 관리
 	List<String> messages;
 	List<String> senderIds;
 	
-	private static final String SELECT_ROOM_MESSAGE = "select content from Message where roomId = ? order by messageId asc";
+	private static final String SELECT_ROOM_MESSAGE = "select senderId, content from Message where roomId = ? order by messageId asc";
 	private static final String SELECT_SENDERID = "select senderId from Message where roomId = ?";
 	private static final String UPDATE_MESSAGE = "insert into Message (roomId, senderId, content, time) values (?,?,?, NOW())";
 	
 	public MessageDAO() throws SQLException {
-		this("jdbc:mysql://localhost:3306/mychat?serverTimezone=UTC", "root", "375@hyunji");
+		this("jdbc:mysql://localhost:3306/mychat?serverTimezone=UTC", "root", "qwe123!@#");
 		// 아래 생성자 이용
 		System.out.println("DB 연결에 성공했습니다.");
 	}
@@ -37,6 +38,21 @@ public class MessageDAO { // Message 테이블과의 연동 관리
 			e.printStackTrace();
 		}
 	}
+	
+//	public void searchMsg() { // Message 데이터 모두 조회 
+//		try (PreparedStatement pstmt = conn.prepareStatement(SELECT_MESSAGE)){
+//			ResultSet rs = pstmt.executeQuery();
+//			while(rs.next()) {
+//				int messageId = rs.getInt(1);
+//				int roomId = rs.getInt(2);
+//				String senderId = rs.getString(3);
+//				String content = rs.getString(4);
+//				Timestamp timestamp = rs.getTimestamp(5);
+//			}
+//		}catch(SQLException e) {
+//			e.printStackTrace();
+//		}
+//	}
 	
 	public void inputMessage(String messageText, int roomId, String senderId) { // Message 테이블에 데이터 insert 하는 메소드
 		
@@ -61,8 +77,10 @@ public class MessageDAO { // Message 테이블과의 연동 관리
 	        ResultSet rs = pstmt.executeQuery();
 
 	        while (rs.next()) {
+	        	String senderId = rs.getString("senderId");
 	            String message = rs.getString("content");
-	            messages.add(message);
+	            
+	            messages.add(message); // 여기서부터 수정 
 	        }
 	    } catch (SQLException e) {
 	        e.printStackTrace();
