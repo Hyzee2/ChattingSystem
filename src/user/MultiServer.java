@@ -10,6 +10,7 @@ public class MultiServer {
 	
 	public MultiServer()throws IOException{
 		list = new ArrayList<MultiServerThread>();
+		
 		ServerSocket serverSocket = new ServerSocket(8050);
 		MultiServerThread mst = null;
 		boolean isStop = false;
@@ -17,8 +18,10 @@ public class MultiServer {
 		while(!isStop){
 			System.out.println("Server ready...");
 			socket = serverSocket.accept();
+			
 			mst = new MultiServerThread(this);
 			list.add(mst);
+			
 			Thread t = new Thread(mst);
 			t.start();
 		}

@@ -19,7 +19,7 @@ public class UserDAO { // Users 테이블, Frineds 테이블과의 연동 관리
 	private static final String SELECT_ALL_FRIENDS = "select friendId from Friends where userId = ?";
 
 	public UserDAO() throws SQLException {
-		this("jdbc:mysql://localhost:3306/mychat?serverTimezone=UTC", "root", "375@hyunji");
+		this("jdbc:mysql://localhost:3306/mychat?serverTimezone=UTC", "root", "qwe123!@#");
 		// 아래 생성자 이용
 		System.out.println("DB 연결에 성공했습니다.");
 	}

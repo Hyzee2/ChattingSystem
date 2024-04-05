@@ -10,7 +10,6 @@ public class ChatroomDAO {
 	Connection conn;
 	PreparedStatement pstmt; // prepared
 
-	private ChatRoom chatroom;
 	private int roomId;
 	private String roomname;
 	private List<String> roomlist;
@@ -24,7 +23,7 @@ public class ChatroomDAO {
 	private static final String INSERT_PARTICIPANTS = "insert into Participants values (?,?)";
 
 	public ChatroomDAO() throws SQLException {
-		this("jdbc:mysql://localhost:3306/mychat?serverTimezone=UTC", "root", "375@hyunji");
+		this("jdbc:mysql://localhost:3306/mychat?serverTimezone=UTC", "root", "qwe123!@#"); //qwe123!@#
 		// 아래 생성자 이용
 		System.out.println("DB 연결에 성공했습니다.");
 	}
@@ -98,7 +97,7 @@ public class ChatroomDAO {
 	        pstmt3.setString(2, user.getUserId());
 	        pstmt3.executeUpdate();
 	    }
-	    return targetRoomId; 
+	    return this.roomId = targetRoomId; 
 	}
 	
 	public int createChatRoom(String roomname) throws SQLException {

@@ -100,19 +100,26 @@ public class LoginGUI extends JFrame { // 로그인 창 만들기
 	}
 
 	private void signUp() {
-		String userId = JOptionPane.showInputDialog(this, "User ID 입력:");
+		String userId = JOptionPane.showInputDialog(this, "ID를 입력하세요");
 		// 사용자가 취소를 눌렀을 경우, userId가 null이 됩니다.
 		if (userId == null) {
 			return; // 회원가입 과정을 중단하고 메소드 종료
+		} else if (userId.isEmpty()) {
+			JOptionPane.showMessageDialog(this, "입력한 ID가 올바르지 않습니다", "경고", JOptionPane.WARNING_MESSAGE);
+			return; // 사용자가 입력을 하지 않고 '확인'을 누른 경우, 경고 메시지를 보여주고 메소드 종료
 		}
-		String username = JOptionPane.showInputDialog(this, "프로필 이름 입력:");
+
+		String username = JOptionPane.showInputDialog(this, "프로필 이름을 입력하세요");
 		// 사용자가 취소를 눌렀을 경우, username도 null이 됩니다.
 		if (username == null) {
 			return; // 회원가입 과정을 중단하고 메소드 종료
+		} else if (username.isEmpty()) {
+			JOptionPane.showMessageDialog(this, "입력한 이름이 올바르지 않습니다","경고", JOptionPane.WARNING_MESSAGE);
+			return; // 사용자가 입력을 하지 않고 '확인'을 누른 경우, 경고 메시지를 보여주고 메소드 종료
 		}
 		// JPasswordField를 사용하여 비밀번호 입력받기
 		JPasswordField passwordField = new JPasswordField();
-		int action = JOptionPane.showConfirmDialog(this, passwordField, "Password 입력:", JOptionPane.OK_CANCEL_OPTION);
+		int action = JOptionPane.showConfirmDialog(this, passwordField, "비밀번호를 입력하세요", JOptionPane.OK_CANCEL_OPTION);
 
 		if (action == JOptionPane.OK_OPTION) {
 			// 사용자가 OK를 눌렀을 때 비밀번호 처리
@@ -121,7 +128,7 @@ public class LoginGUI extends JFrame { // 로그인 창 만들기
 
 			userDAO.addUser(user); // db에 반영
 
-			JOptionPane.showMessageDialog(this, "회원 정보 입력이 성공하였습니다!");
+			JOptionPane.showMessageDialog(this, "회원 정보가 입력되었습니다!");
 		} else {
 
 		}

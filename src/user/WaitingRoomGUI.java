@@ -1,11 +1,14 @@
 package user;
 
 import javax.swing.*;
+import javax.swing.text.BadLocationException;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -44,10 +47,11 @@ public class WaitingRoomGUI extends JFrame {
 			public void mouseClicked(MouseEvent e) {
 				if (e.getClickCount() == 2) { // 더블 클릭 이벤트 처리
 					String selectedRoomname = chatRoomList.getSelectedValue(); // 수정 필요
-					// 선택된 채팅방으로 들어가기 위해 ChatRoomGUI 인스턴스 생성
+					// 선택된 채팅방으로 들어가기 위해 MultiChatRoomGUI 인스턴스 생성
 					try {
-						new ChatRoomGUI(currentUser, selectedRoomname, true).setVisible(true);
-					} catch (SQLException e1) {
+						new MultiChatRoomGUI(currentUser, selectedRoomname, true);
+						//.setVisible(true);
+					} catch (SQLException | IOException | BadLocationException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 						JOptionPane.showMessageDialog(null, "에러 발생: " + e1.getMessage());
@@ -63,11 +67,11 @@ public class WaitingRoomGUI extends JFrame {
 	        public void actionPerformed(ActionEvent e) {
 	            createChatRoom();
 	         
-	        }
+	        } 
 	    
 	      
 	    });
-	    
+	    // '새로고침' 버튼 추가 
 	    refreshButton = new JButton("새로고침");
 	    refreshButton.addActionListener(new ActionListener() {
 	        @Override
