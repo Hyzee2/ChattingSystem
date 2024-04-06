@@ -38,6 +38,7 @@ public class WaitingRoomGUI extends JFrame {
 		setSize(400, 600);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLayout(new BorderLayout());
+		
 		// 채팅방 목록을 표시하는 JList를 초기화하고 채팅방 목록을 설정
 		chatRoomList = new JList<>(roomlist.toArray(new String[0]));
 		add(new JScrollPane(chatRoomList), BorderLayout.CENTER);
@@ -47,7 +48,7 @@ public class WaitingRoomGUI extends JFrame {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				if (e.getClickCount() == 2) { // 더블 클릭 이벤트 처리
-					String selectedRoomname = chatRoomList.getSelectedValue(); // 수정 필요
+					String selectedRoomname = chatRoomList.getSelectedValue(); // getSelectedValue()의 반환 타입은 object 
 					// 선택된 채팅방으로 들어가기 위해 MultiChatRoomGUI 인스턴스 생성
 					
 					try {
