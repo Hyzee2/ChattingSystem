@@ -5,6 +5,7 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -73,8 +74,22 @@ public class AdminGUI extends JFrame {
 	
 	public void loginDataGet(String userId) {
 		List<Login> loginUsers = userDAO.searchLogin(userId);
-		JList<String> loginList = new JList<>(loginUsers.toArray(new String[0]));
-		add(new JScrollPane(loginList), BorderLayout.CENTER);
+		// Login 객체의 리스트를 String의 리스트로 변환
+	    List<String> loginInfo = new ArrayList<>();
+	    for (Login login : loginUsers) {
+	        // 예시로, 여기서는 login 객체의 userId와 loginDate를 사용하여 문자열을 생성합니다.
+	        // 실제 Login 클래스의 구조에 맞게 조정해야 합니다.
+	        String info = "ID: " + login.getUserId() + ", Date: " + login.getDate();
+	        loginInfo.add(info);
+	    }
+		JList<String> loginList = new JList<>(loginInfo.toArray(new String[0]));
+		JScrollPane scrollPane = new JScrollPane(loginList);
+		getContentPane().removeAll();
+	    getContentPane().add(scrollPane, BorderLayout.CENTER);
+	    // 변경사항을 적용하기 위해 GUI를 새로 그림
+	    getContentPane().revalidate();
+	    getContentPane().repaint();
+
 	}
 	
 }
