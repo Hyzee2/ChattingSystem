@@ -48,7 +48,7 @@ public class UserDAO { // Users 테이블, Frineds 테이블과의 연동 관리
 			try (ResultSet rs = pstmt.executeQuery()) {
 				while (rs.next()) {
 					String targetUserId = rs.getString("userId");
-					Date date = rs.getDate("date");
+					Date date = rs.getDate("time");
 					Login login = new Login(targetUserId, date);
 					userLogins.add(login);
 				}
