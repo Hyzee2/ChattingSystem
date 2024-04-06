@@ -12,9 +12,9 @@ public class MultiClientThread extends Thread {
 
 	public MultiClientThread(MultiChatRoomGUI multiChatRoomGUI) {
 		this.multiChatRoomGUI = multiChatRoomGUI;
+		//this.senderId = user.getUserId();
 	}
 	
-	//displayMessage
 
 	public void run() {
 		String message = null;
@@ -23,8 +23,6 @@ public class MultiClientThread extends Thread {
 		while (!isStop) {
 			try {
 				message = (String) multiChatRoomGUI.getOis().readObject();
-				
-				System.out.println("message: "+message);
 				
 				receivedMsg = message.split("#");
 				
@@ -42,12 +40,13 @@ public class MultiClientThread extends Thread {
 						if (receivedMsg[0].equals(multiChatRoomGUI.getCurrentUser().getUserId())) { // 현재 사용자의 userId와
 																									// 사용자의 id가 일치하면
 							multiChatRoomGUI.exitApplication(); // 채팅방 종료
+							
 						} else { // 만약 exit를 입력한 id와 현재 사용자의 id가 다른경우면 (다른 사용자가 exit라고 입력한 경우 )
 									// exit 메시지 처리
 							try {
 								SwingUtilities.invokeLater(() -> {
 									try {
-										multiChatRoomGUI.displayMessage(receivedMsg[0] + "님이 종료 하셨습니다.", );
+										multiChatRoomGUI.displayMessage(receivedMsg[0] + "님이 종료 하셨습니다.", receivedMsg[0]);
 									} catch (BadLocationException e) {
 										// TODO Auto-generated catch block
 										e.printStackTrace();
@@ -61,29 +60,35 @@ public class MultiClientThread extends Thread {
 					} else {
 						// 일반 메시지 처리
 						SwingUtilities.invokeLater(() -> {
-
-							SimpleAttributeSet attrs = new SimpleAttributeSet();
-							if (receivedMsg[0].equals(multiChatRoomGUI.getCurrentUser().getUserId())) { // 사용자의 id와 메시지를
-																										// 입력한 id가 동일하다면
-								StyleConstants.setAlignment(attrs, StyleConstants.ALIGN_RIGHT);
-								
-								try {
-									multiChatRoomGUI.displayMessage(receivedMsg[1], senderId);
-								} catch (BadLocationException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
-							} else {
-								StyleConstants.setAlignment(attrs, StyleConstants.ALIGN_LEFT);
-								
-								try {
-									multiChatRoomGUI.displayMessage(receivedMsg[1], senderId);
-								} catch (BadLocationException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
-
-							}
+							
+							try {
+		                        // 모든 메시지를 동일하게 "사용자ID: 메시지" 형식으로 표시
+		                        multiChatRoomGUI.displayMessage(receivedMsg[1], receivedMsg[0]);
+		                    } catch (BadLocationException e) {
+		                        e.printStackTrace();
+		                    }
+//							SimpleAttributeSet attrs = new SimpleAttributeSet();
+//							if (receivedMsg[0].equals(multiChatRoomGUI.getCurrentUser().getUserId())) { // 사용자의 id와 메시지를
+//																										// 입력한 id가 동일하다면
+//								StyleConstants.setAlignment(attrs, StyleConstants.ALIGN_RIGHT);
+//								
+//								try {
+//									multiChatRoomGUI.displayMessage(receivedMsg[1], senderId);
+//								} catch (BadLocationException e) {
+//									// TODO Auto-generated catch block
+//									e.printStackTrace();
+//								}
+//							} else {
+//								StyleConstants.setAlignment(attrs, StyleConstants.ALIGN_LEFT);
+//								
+//								try {
+//									multiChatRoomGUI.displayMessage(receivedMsg[1], senderId);
+//								} catch (BadLocationException e) {
+//									// TODO Auto-generated catch block
+//									e.printStackTrace();
+//								}
+//
+//							} 
 							
 							
 						});
