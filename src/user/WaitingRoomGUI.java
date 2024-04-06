@@ -25,6 +25,7 @@ public class WaitingRoomGUI extends JFrame {
 	private UserDAO userDAO;
 	private ChatroomDAO chatroomDAO;
 	private List<String> roomlist;
+	private List<String> selectedMembers; // 채팅방 참여자들 리스트 
 
 	public WaitingRoomGUI(List<String> roomlist, User currentUser, boolean isSelf) throws SQLException {
 		this.currentUser = currentUser;
@@ -48,9 +49,10 @@ public class WaitingRoomGUI extends JFrame {
 				if (e.getClickCount() == 2) { // 더블 클릭 이벤트 처리
 					String selectedRoomname = chatRoomList.getSelectedValue(); // 수정 필요
 					// 선택된 채팅방으로 들어가기 위해 MultiChatRoomGUI 인스턴스 생성
+					
 					try {
-						new MultiChatRoomGUI(currentUser, selectedRoomname, true);
-						//.setVisible(true);
+						new MultiChatRoomGUI(currentUser, selectedMembers, selectedRoomname, true).setVisible(true);
+						
 					} catch (SQLException | IOException | BadLocationException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
@@ -127,31 +129,37 @@ public class WaitingRoomGUI extends JFrame {
 		setVisible(true);
 	}
 	
-	private void createChatRoom() {
+	private List<String> createChatRoom() {
 	    // 친구 목록 가져오기
 	    List<String> friendsList = userDAO.getFriends(currentUser.getUserId());
 	    JList<String> list = new JList<>(friendsList.toArray(new String[0]));
+	    
 	    list.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 	    JOptionPane.showMessageDialog(null, new JScrollPane(list), "친구 선택", JOptionPane.PLAIN_MESSAGE);
 	    
 	    // 선택된 친구들의 userId 가져오기
+	    List<String> selectedMembers = null; // 
 	    List<String> selectedFriends = list.getSelectedValuesList();
 	    if (!selectedFriends.isEmpty()) {
 	        // 새 채팅방을 데이터베이스에 추가하고 선택된 친구들을 참여시키는 로직
 	        try {
 	            String newRoomName = JOptionPane.showInputDialog("채팅방 이름 입력:");
 	            if (newRoomName != null && !newRoomName.isEmpty()) {
-	                int newRoomId = chatroomDAO.createChatRoom(newRoomName);
+	                int newRoomId = chatroomDAO.createChatRoom(newRoomName); // 새로운 채팅방 이름에 대한 새로운 채팅방 번호 생성 
 	                for (String friendId : selectedFriends) {
 	                    chatroomDAO.addParticipantToRoom(newRoomId, friendId);
 	                }
 	                chatroomDAO.addParticipantToRoom(newRoomId, currentUser.getUserId()); // 현재 사용자도 채팅방에 추가
+	                
+	                // List 형태로 해당 채팅방 참여자들 담아주기 
+	                selectedMembers = chatroomDAO.selectMembers(newRoomId); 
 	                
 	            }
 	        } catch (SQLException ex) {
 	            ex.printStackTrace();
 	        }
 	    }
+	    return this.selectedMembers = selectedMembers;
 	}
 	
 	private void refreshChatRoomList() throws SQLException {

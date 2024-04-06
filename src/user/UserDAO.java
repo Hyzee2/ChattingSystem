@@ -16,10 +16,11 @@ public class UserDAO { // Users 테이블, Frineds 테이블과의 연동 관리
 	private static final String UPDATE_USERNAME = "update Users set username = ? where userId = ?";
 	private static final String SELECT_ONE_USER = "select userId from Users where userId = ?";
 	private static final String INSERT_FRIEND = "insert into Friends values (?,?)";
+	private static final String INSERT_FRIEND_SAME = "insert into Friends values (?,?)";
 	private static final String SELECT_ALL_FRIENDS = "select friendId from Friends where userId = ?";
 
 	public UserDAO() throws SQLException {
-		this("jdbc:mysql://localhost:3306/mychat?serverTimezone=UTC", "root", "qwe123!@#");
+		this("jdbc:mysql://localhost:3306/mychat?serverTimezone=UTC", "root", "375@hyunji");
 		// 아래 생성자 이용
 		System.out.println("DB 연결에 성공했습니다.");
 	}
@@ -65,6 +66,16 @@ public class UserDAO { // Users 테이블, Frineds 테이블과의 연동 관리
 		} catch (SQLException e) {
 			printSQLException(e);
 		}
+		
+		try (PreparedStatement pstmt = conn.prepareStatement(INSERT_FRIEND_SAME)) {
+			pstmt.setString(1, friendId);
+			pstmt.setString(2, userId);
+		
+			pstmt.executeUpdate();
+		} catch (SQLException e) {
+			printSQLException(e);
+		}
+		
 	}
 	
 	public List<String> getFriends(String userId) { // 주어진 userId의 모든 친구 목록을 반환 한다. 

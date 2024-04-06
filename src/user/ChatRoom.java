@@ -44,7 +44,7 @@ public class ChatRoom {
     // 채팅방에 메시지를 받는 기능을 구현
     public void receiveMessage(User sender, String messageContent) {
         // 메시지 객체 생성
-        Message message = new Message(sender, messageContent);
+        Message message = new Message(sender.getUserId(), messageContent);
 
         // 채팅방의 모든 참여자에게 메시지 전달 (메시지 보낸 사람 제외)
         for (MessageReceiver receiver : messageReceivers) {
@@ -69,7 +69,7 @@ public class ChatRoom {
     }
     
     public void sendMessage(User sender, String messageContent) {
-    	 Message message = new Message(sender, messageContent);
+    	 Message message = new Message(sender.getUserId(), messageContent);
     	    for (MessageReceiver receiver : messageReceivers) {
     	    	// 모든 참여자에게 메시지와 함께 'isSelf' 플래그를 전달
     	        // 메시지 보낸 사람과 수신자가 같은지 여부에 따라 'isSelf' 플래그 설정

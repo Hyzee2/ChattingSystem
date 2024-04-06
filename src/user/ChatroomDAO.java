@@ -21,9 +21,10 @@ public class ChatroomDAO {
 	private static final String SELECT_ONE_ROOMID = "SELECT roomId FROM Chatroom where roomname = ?";
 	private static final String INSERT_CHATROOM = "insert into Chatroom (roomname) values(?)";
 	private static final String INSERT_PARTICIPANTS = "insert into Participants values (?,?)";
+	private static final String SELECT_ALL_PARTICIPANTS = "select userId from Participants where = roomId = ?";
 
 	public ChatroomDAO() throws SQLException {
-		this("jdbc:mysql://localhost:3306/mychat?serverTimezone=UTC", "root", "qwe123!@#"); //qwe123!@#
+		this("jdbc:mysql://localhost:3306/mychat?serverTimezone=UTC", "root", "375@hyunji"); //qwe123!@# //375@hyunji
 		// 아래 생성자 이용
 		System.out.println("DB 연결에 성공했습니다.");
 	}
@@ -38,6 +39,23 @@ public class ChatroomDAO {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public List<String> selectMembers(int roomId) {
+		List<String> selectedMembers = new ArrayList<>();
+		try (PreparedStatement pstmt = conn.prepareStatement(SELECT_ALL_PARTICIPANTS)) {
+			pstmt.setInt(1, roomId);
+			
+			ResultSet rs = pstmt.executeQuery();
+
+			while (rs.next()) {
+				String userId = rs.getString("userId");
+				selectedMembers.add(userId);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return selectedMembers;
 	}
 
 	public List<String> searchRoomList(String userId) {

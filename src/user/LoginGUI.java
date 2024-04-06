@@ -87,13 +87,23 @@ public class LoginGUI extends JFrame { // 로그인 창 만들기
 				break;
 			}
 		}
+		
+		if(foundUser.getUserId().equals("admin") && foundUser.getPassword().equals("123")) { // 관리자인 경우 관리자 페이지로 넘어감 
+			AdminGUI adminGUI = new AdminGUI();
+			adminGUI.setVisible(true);
+			dispose();
+			return;
+		}
+		
 
 		if (foundUser != null) {
 			// 로그인 성공 시 User 객체를 생성하여 UserGUI로 이동
 			UserGUI userGUI = new UserGUI(foundUser, true); // 로그인한 본인의 프로필 화면으로 넘어감
 			userGUI.setVisible(true);
 			dispose(); // 로그인 화면 닫기
-		} else {
+		} 
+		
+		else {
 			JOptionPane.showMessageDialog(this, "id 혹은 pw가 일치하지 않습니다.");
 		}
 
