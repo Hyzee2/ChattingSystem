@@ -10,6 +10,7 @@ public class UserDAO { // Users 테이블, Frineds 테이블과의 연동 관리
 	
 	private User user;
 	private List<User> users;
+	private List<Login> userLogins;
 
 	private static final String INSERT_USERS_SQL = "INSERT INTO Users (userId, username, password) VALUES (?, ?, ?)";
 	private static final String SELECT_ALL_USERS = "SELECT * FROM Users";
@@ -18,7 +19,9 @@ public class UserDAO { // Users 테이블, Frineds 테이블과의 연동 관리
 	private static final String INSERT_FRIEND = "insert into Friends values (?,?)";
 	private static final String INSERT_FRIEND_SAME = "insert into Friends values (?,?)";
 	private static final String SELECT_ALL_FRIENDS = "select friendId from Friends where userId = ?";
-
+	private static final String INSERT_LOGIN = "insert into Login values (?, now())";
+	private static final String SELECT_USER_LOGIN = "select * from Login where userId = ?";
+	
 	public UserDAO() throws SQLException {
 		this("jdbc:mysql://localhost:3306/mychat?serverTimezone=UTC", "root", "375@hyunji");
 		// 아래 생성자 이용
@@ -36,7 +39,37 @@ public class UserDAO { // Users 테이블, Frineds 테이블과의 연동 관리
 			e.printStackTrace();
 		}
 	}
-
+	// 특정 사용자의 로그인 정보 조회하는 메소드 
+	public List<Login> searchLogin(String userId) {
+		List<Login> userLogins = new ArrayList<>();
+		try (PreparedStatement pstmt = conn.prepareStatement(SELECT_USER_LOGIN)) {
+			pstmt.setString(1, userId);
+			
+			try (ResultSet rs = pstmt.executeQuery()) {
+				while (rs.next()) {
+					String targetUserId = rs.getString("userId");
+					Date date = rs.getDate("date");
+					Login login = new Login(targetUserId, date);
+					userLogins.add(login);
+				}
+			}
+		} catch (SQLException e) {
+            e.printStackTrace();
+        }
+		
+		return userLogins;
+	}
+	
+	public void updateLogin(String userId) { // 로그인 성공하면 Login 테이블에 insert 실행 
+		try (PreparedStatement pstmt = conn.prepareStatement(INSERT_LOGIN)) {
+			pstmt.setString(1, userId);
+		
+			pstmt.executeUpdate();
+		} catch (SQLException e) {
+			printSQLException(e);
+		}
+	}
+	
 	public boolean existsUser(String userId) { // 주어진 userId가 Users 테이블에 존재하는지 확인 
 		String targetUserId = "";
 		try (PreparedStatement pstmt = conn.prepareStatement(SELECT_ONE_USER)) {

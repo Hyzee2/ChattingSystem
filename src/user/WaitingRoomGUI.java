@@ -95,7 +95,7 @@ public class WaitingRoomGUI extends JFrame {
 	    addFriendButton.addActionListener(new ActionListener() {
 	        @Override
 	        public void actionPerformed(ActionEvent e) {
-	            String friendId = JOptionPane.showInputDialog("친구의 ID를 입력하세요:");
+	            String friendId = JOptionPane.showInputDialog("친구의 ID를 입력하세요");
 	            if (friendId != null && !friendId.isEmpty()) {
 	                if (userDAO.existsUser(friendId)) {
 					    userDAO.addFriend(currentUser.getUserId(), friendId);

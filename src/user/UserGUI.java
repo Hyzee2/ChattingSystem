@@ -67,24 +67,7 @@ public class UserGUI extends JFrame { // 사용자 프로필이 뜨는 화면 �
 			panel.add(editProfileButton);
 		}
 
-//        // 채팅 시작하기 버튼
-//        startChatButton = new JButton("대화 시작하기");
-//        startChatButton.setBounds(labelX + 130, labelY + labelHeight + 10, 120, labelHeight); // 프로필 편집 버튼의 오른쪽에 배치
-//        startChatButton.addActionListener(new ActionListener() { 
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                try {
-//					startChat();
-//				} catch (SQLException e1) {
-//					// TODO Auto-generated catch block
-//					e1.printStackTrace();
-//				} // 채팅방으로 넘어가는 메소드 호출 
-//            }
-//        });
-//        panel.add(startChatButton);
-//
-//        getContentPane().add(panel);
-//        setVisible(true);
+
 
 		chatRoomListButton = new JButton("채팅목록");
 		chatRoomListButton.setBounds(labelX + 130, labelY + labelHeight + 10, 120, labelHeight); //

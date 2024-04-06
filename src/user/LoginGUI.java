@@ -74,7 +74,7 @@ public class LoginGUI extends JFrame { // 로그인 창 만들기
 	}
 
 	private void login() throws SQLException {
-		String userID = userIDField.getText();
+		String userId = userIDField.getText();
 		String password = new String(passwordField.getPassword());
 
 		// 사용자가 입력한 userID와 password를 이용하여 회원 정보를 찾음
@@ -82,29 +82,31 @@ public class LoginGUI extends JFrame { // 로그인 창 만들기
 		this.users = this.userDAO.selectAllUsers(); // 로그인 하기 전에 Users db에서 회원 정보 끌어오기
 
 		for (User user : users) {
-			if (user.getUserId().equals(userID) && user.getPassword().equals(password)) {
+			if (user.getUserId().equals(userId) && user.getPassword().equals(password)) {
 				foundUser = user;
 				break;
 			}
 		}
-		
-		if(foundUser.getUserId().equals("admin") && foundUser.getPassword().equals("123")) { // 관리자인 경우 관리자 페이지로 넘어감 
+
+		if (foundUser.getUserId().equals("admin") && foundUser.getPassword().equals("123")) { // 관리자인 경우 관리자 페이지로 넘어감
 			AdminGUI adminGUI = new AdminGUI();
 			adminGUI.setVisible(true);
 			dispose();
 			return;
-		}
-		
+		} else {
 
-		if (foundUser != null) {
-			// 로그인 성공 시 User 객체를 생성하여 UserGUI로 이동
-			UserGUI userGUI = new UserGUI(foundUser, true); // 로그인한 본인의 프로필 화면으로 넘어감
-			userGUI.setVisible(true);
-			dispose(); // 로그인 화면 닫기
-		} 
-		
-		else {
-			JOptionPane.showMessageDialog(this, "id 혹은 pw가 일치하지 않습니다.");
+			if (foundUser != null) {
+				// 로그인 db에 insert 하기
+				userDAO.updateLogin(userId);
+				// 로그인 성공 시 User 객체를 생성하여 UserGUI로 이동
+				UserGUI userGUI = new UserGUI(foundUser, true); // 로그인한 본인의 프로필 화면으로 넘어감
+				userGUI.setVisible(true);
+				dispose(); // 로그인 화면 닫기
+				
+			} else 
+				JOptionPane.showMessageDialog(this, "id 혹은 pw가 일치하지 않습니다.");
+			
+
 		}
 
 	}
@@ -124,7 +126,7 @@ public class LoginGUI extends JFrame { // 로그인 창 만들기
 		if (username == null) {
 			return; // 회원가입 과정을 중단하고 메소드 종료
 		} else if (username.isEmpty()) {
-			JOptionPane.showMessageDialog(this, "입력한 이름이 올바르지 않습니다","경고", JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(this, "입력한 이름이 올바르지 않습니다", "경고", JOptionPane.WARNING_MESSAGE);
 			return; // 사용자가 입력을 하지 않고 '확인'을 누른 경우, 경고 메시지를 보여주고 메소드 종료
 		}
 		// JPasswordField를 사용하여 비밀번호 입력받기
