@@ -13,6 +13,7 @@ public class ChatroomDAO {
 	private int roomId;
 	private String roomname;
 	private List<String> roomlist;
+	private List<Participants> parlist;
 
 	private User user;
 	private String userId;
@@ -22,7 +23,9 @@ public class ChatroomDAO {
 	private static final String INSERT_CHATROOM = "insert into Chatroom (roomname) values(?)";
 	private static final String INSERT_PARTICIPANTS = "insert into Participants values (?,?)";
 	private static final String SELECT_ALL_PARTICIPANTS = "select userId from Participants where roomId = ?";
-
+	private static final String OUT_PARTICIPANTS = "delete from Participants where roomId = ? and userID = ?";
+	private static final String SELECT_ALL_CHAT = "select * from Participants";
+	
 	public ChatroomDAO() throws SQLException {
 		this("jdbc:mysql://localhost:3306/mychat?serverTimezone=UTC", "root", "375@hyunji"); //qwe123!@# //375@hyunji
 		// 아래 생성자 이용
@@ -38,6 +41,37 @@ public class ChatroomDAO {
 			e.printStackTrace();
 		} catch (SQLException e) {
 			e.printStackTrace();
+		}
+	}
+	
+	public List<Participants> searchChatroom() {
+		List<Participants> parlist = new ArrayList<>();
+
+		try (PreparedStatement pstmt = conn.prepareStatement(SELECT_ALL_CHAT)) {
+			
+			ResultSet rs = pstmt.executeQuery();
+
+			while (rs.next()) {
+				int roomId = rs.getInt("roomId");
+				String userId = rs.getString("userId");
+				Participants par = new Participants(roomId, userId);
+				parlist.add(par);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return this.parlist = parlist;
+	}
+	
+	public void outMembers(int roomId, String userId) {
+		try (PreparedStatement pstmt = conn.prepareStatement(OUT_PARTICIPANTS)) {
+			pstmt.setInt(1, roomId);
+			pstmt.setString(2, userId);
+		
+			pstmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();;
 		}
 	}
 	

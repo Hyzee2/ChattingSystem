@@ -21,6 +21,7 @@ public class UserDAO { // Users 테이블, Frineds 테이블과의 연동 관리
 	private static final String SELECT_ALL_FRIENDS = "select friendId from Friends where userId = ?";
 	private static final String INSERT_LOGIN = "insert into Login values (?, now())";
 	private static final String SELECT_USER_LOGIN = "select * from Login where userId = ?";
+	private static final String DELETE_USER = "delete from Users where userId = ?";
 	
 	public UserDAO() throws SQLException {
 		this("jdbc:mysql://localhost:3306/mychat?serverTimezone=UTC", "root", "375@hyunji");
@@ -39,6 +40,20 @@ public class UserDAO { // Users 테이블, Frineds 테이블과의 연동 관리
 			e.printStackTrace();
 		}
 	}
+	
+	/**
+	 * 회원 정보 삭제 
+	 */
+	public void deleteUser(String userId) {
+		try (PreparedStatement pstmt = conn.prepareStatement(DELETE_USER)) {
+			pstmt.setString(1, userId);
+		
+			pstmt.executeUpdate();
+		} catch (SQLException e) {
+			printSQLException(e);
+		}
+	}
+	
 	// 특정 사용자의 로그인 정보 조회하는 메소드 
 	public List<Login> searchLogin(String userId) {
 		List<Login> userLogins = new ArrayList<>();
@@ -48,7 +63,7 @@ public class UserDAO { // Users 테이블, Frineds 테이블과의 연동 관리
 			try (ResultSet rs = pstmt.executeQuery()) {
 				while (rs.next()) {
 					String targetUserId = rs.getString("userId");
-					Date date = rs.getDate("time");
+					Timestamp date = rs.getTimestamp("time");
 					Login login = new Login(targetUserId, date);
 					userLogins.add(login);
 				}
