@@ -1,13 +1,14 @@
 package user;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 
 public class Login {
 	private String userId;
-	private Date date; // 날짜 데이터 타입말고 나중에 시간도 같이 나오는 타입으로 수정하기  
+	private Timestamp date;   
 	
-	public Login(String userId, Date date) {
+	public Login(String userId, Timestamp date) {
 		this.userId = userId;
 		this.date = date;
 	}
@@ -18,10 +19,10 @@ public class Login {
 	public void setUserId(String userId) {
 		this.userId = userId;
 	}
-	public Date getDate() {
+	public Timestamp getDate() {
 		return date;
 	}
-	public void setDate(Date date) {
+	public void setDate(Timestamp date) {
 		this.date = date;
 	}
 

@@ -2,8 +2,10 @@ package user;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,9 +22,12 @@ public class AdminGUI extends JFrame {
 
 	private Component adminnameLabel;
 	private UserDAO userDAO;
-	private JButton loginButton;
+	private ChatroomDAO chatroomDAO;
+	private JButton loginButton, deleteButton, outButton;
 	private String userId;
 	private List<Login> loginUsers;
+	private List<Participants> parlist;
+
 
 
 
@@ -32,33 +37,93 @@ public class AdminGUI extends JFrame {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		this.userDAO = new UserDAO();
+		this.chatroomDAO = new ChatroomDAO();
 		
 		JPanel panel = new JPanel();
-		panel.setLayout(null); // Layout Manager 제거
+		panel.setLayout(new GridLayout(4, 1));
 
 		
-		int labelWidth = 200;
-		int labelHeight = 20;
-		int labelX = 75;
-		int labelY = 400;
 		adminnameLabel = new JLabel("관리자 페이지 입니다. ");
-		adminnameLabel.setBounds(135, labelY, labelWidth, labelHeight);
+		//adminnameLabel.setBounds(135, labelY, labelWidth, labelHeight);
 		panel.add(adminnameLabel);
 		
 		loginButton = new JButton("Login 조회"); // 버튼 생성
-		loginButton.setBounds(labelX, labelY + labelHeight + 10, 120, labelHeight);
+		//loginButton.setBounds(labelX, labelY + labelHeight + 10, 120, labelHeight);
 		loginButton.addActionListener(new ActionListener() { // 기능구현 가능한 리스너 붙이기
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				loginData(); // 기능 메소드
 			}
 		});
-		panel.add(loginButton); // 버튼 붙이기
+		panel.add(loginButton); // 로그인 조회 버튼 붙이기
+		
+		deleteButton = new JButton("회원 삭제"); // 버튼 생성
+		deleteButton.addActionListener(new ActionListener() { // 기능구현 가능한 리스너 붙이기
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				deleteData(); // 기능 메소드
+			}
+		});
+		panel.add(deleteButton); // 회원 삭제 버튼 붙이기
+		
+		outButton = new JButton("회원 강퇴"); // 버튼 생성
+		outButton.addActionListener(new ActionListener() {  // 기능구현 가능한 리스너 붙이기
+			@Override
+			public void actionPerformed(ActionEvent e) { // 아직 수정 중... 
+				outData(); // 기능 메소드
+			}
+		});
+		panel.add(outButton); // 회원 강퇴 버튼 붙이기
 		
 		getContentPane().add(panel);
 		setVisible(true);
 	}
 	
+	public void outData() {
+		List<Participants> parlist = chatroomDAO.searchChatroom();
+		// Login 객체의 리스트를 String의 리스트로 변환
+	    List<String> parInfo = new ArrayList<>();
+	    String str = "";
+	    for (Participants par : parlist) {
+	        try {
+				str = Integer.toString(par.getRoomId());
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	        String info = "roomID: " + str + ", userID: " + par.getUserId();
+	        parInfo.add(info);
+	    }
+	    
+		JList<String> allParlist = new JList<>(parInfo.toArray(new String[0]));
+		JScrollPane scrollPane = new JScrollPane(allParlist);
+		getContentPane().removeAll();
+	    getContentPane().add(scrollPane, BorderLayout.CENTER);
+	    // 변경사항을 적용하기 위해 GUI를 새로 그림
+	    getContentPane().revalidate();
+	    getContentPane().repaint();
+	}
+	
+	
+	/**
+	 * 회원 삭제 
+	 */
+	public void deleteData() { 
+		String userId = JOptionPane.showInputDialog("로그인 정보를 확인할 ID를 입력하세요");
+		if (userId != null && !userId.isEmpty()) {
+			if(userDAO.searchLogin(userId)!=null) {
+				userDAO.deleteUser(userId);	
+				JOptionPane.showMessageDialog(this, "회원 정보가 삭제되었습니다!");
+			}else {
+        		JOptionPane.showMessageDialog(this, "입력한 ID는 없습니다", "경고", JOptionPane.WARNING_MESSAGE);
+    			return;
+			}
+		}
+	}
+	
+	/**
+	 * 로그인 데이터 조회 id 입력
+	 */
 	public void loginData() {
 		String userId = JOptionPane.showInputDialog("로그인 정보를 확인할 ID를 입력하세요");
         //this.userId = userId;
@@ -72,6 +137,10 @@ public class AdminGUI extends JFrame {
         }
 	}
 	
+	/**
+	 * 입력받은 id의 로그인 기록 조회 
+	 * @param userId
+	 */
 	public void loginDataGet(String userId) {
 		List<Login> loginUsers = userDAO.searchLogin(userId);
 		// Login 객체의 리스트를 String의 리스트로 변환
