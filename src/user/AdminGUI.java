@@ -2,6 +2,7 @@ package user;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -44,7 +45,7 @@ public class AdminGUI extends JFrame {
 		// adminnameLabel.setBounds(135, labelY, labelWidth, labelHeight);
 		panel.add(adminnameLabel);
 
-		loginButton = new JButton("Login 조회"); // 버튼 생성
+		loginButton = new JButton("회원별 Login 조회"); // 버튼 생성
 		// loginButton.setBounds(labelX, labelY + labelHeight + 10, 120, labelHeight);
 		loginButton.addActionListener(new ActionListener() { // 기능구현 가능한 리스너 붙이기
 			@Override
@@ -66,9 +67,9 @@ public class AdminGUI extends JFrame {
 		outButton = new JButton("회원 강퇴"); // 버튼 생성
 		outButton.addActionListener(new ActionListener() { // 기능구현 가능한 리스너 붙이기
 			@Override
-			public void actionPerformed(ActionEvent e) { 
+			public void actionPerformed(ActionEvent e) {
 				outData(); // 기능 메소드
-				// 강퇴당한 사용자의 채팅창 
+				// 강퇴당한 사용자의 채팅창
 			}
 		});
 		panel.add(outButton); // 회원 강퇴 버튼 붙이기
@@ -82,7 +83,7 @@ public class AdminGUI extends JFrame {
 	 */
 	public void outData() {
 		List<Participants> parlist = chatroomDAO.searchChatroom();
-		
+
 		// Login 객체의 리스트를 String의 리스트로 변환
 		List<String> parInfo = new ArrayList<>();
 		String str = "";
@@ -170,7 +171,7 @@ public class AdminGUI extends JFrame {
 	 * 회원 삭제
 	 */
 	public void deleteData() {
-		String userId = JOptionPane.showInputDialog("로그인 정보를 확인할 ID를 입력하세요");
+		String userId = JOptionPane.showInputDialog("삭제할 회원 ID를 입력하세요");
 		if (userId != null && !userId.isEmpty()) {
 			if (userDAO.searchLogin(userId) != null) {
 				userDAO.deleteUser(userId);
@@ -215,6 +216,7 @@ public class AdminGUI extends JFrame {
 		}
 		JList<String> loginList = new JList<>(loginInfo.toArray(new String[0]));
 		JScrollPane scrollPane = new JScrollPane(loginList);
+
 		getContentPane().removeAll();
 		getContentPane().add(scrollPane, BorderLayout.CENTER);
 		// 변경사항을 적용하기 위해 GUI를 새로 그림

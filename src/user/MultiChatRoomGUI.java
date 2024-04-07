@@ -81,7 +81,7 @@ public class MultiChatRoomGUI extends JFrame implements ActionListener {
 
 	// GUI 초기화 메소드
 	private void initializeGUI() {
-		jframe = new JFrame("Multi Chatting - " + roomname);
+		jframe = new JFrame("[채팅방] " + roomname);
 		jframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		jframe.setSize(400, 600);
 		jframe.setLayout(new BorderLayout());
