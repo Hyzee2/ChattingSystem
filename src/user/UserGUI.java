@@ -33,7 +33,7 @@ public class UserGUI extends JFrame { // 사용자 프로필이 뜨는 화면 �
 		// 가능.
 		this.userDAO = new UserDAO();
 
-		setTitle("User Profile");
+		setTitle(user.getUserId()+"님의 프로필");
 		setSize(400, 600);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -45,7 +45,7 @@ public class UserGUI extends JFrame { // 사용자 프로필이 뜨는 화면 �
 		int labelHeight = 20;
 		int labelX = 75;
 		int labelY = 400;
-		usernameLabel = new JLabel("프로필 이름: " + user.getUsername());
+		usernameLabel = new JLabel("프로필 이름 : "+user.getUsername());
 		usernameLabel.setBounds(135, labelY, labelWidth, labelHeight);
 		panel.add(usernameLabel);
 
@@ -69,7 +69,7 @@ public class UserGUI extends JFrame { // 사용자 프로필이 뜨는 화면 �
 
 
 
-		chatRoomListButton = new JButton("채팅목록");
+		chatRoomListButton = new JButton("채팅하기");
 		chatRoomListButton.setBounds(labelX + 130, labelY + labelHeight + 10, 120, labelHeight); //
 		chatRoomListButton.addActionListener(new ActionListener() {
 			@Override

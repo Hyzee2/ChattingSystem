@@ -33,7 +33,7 @@ public class WaitingRoomGUI extends JFrame {
 		this.userDAO = new UserDAO();
 		this.roomlist = roomlist;
 
-		setTitle("채팅 목록 - " + currentUser.getUserId());
+		setTitle(currentUser.getUserId()+"님의 채팅 목록");
 		setSize(400, 600);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLayout(new BorderLayout());

@@ -19,7 +19,7 @@ public class LoginGUI extends JFrame { // 로그인 창 만들기
 
 	public LoginGUI() throws SQLException {
 
-		setTitle("Login");
+		setTitle("도담도담 Login");
 		setSize(400, 600);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
