@@ -127,7 +127,11 @@ public class LoginGUI extends JFrame { // 로그인 창 만들기
 		// 사용자가 취소를 눌렀을 경우, userId가 null이 됩니다.
 		if (userId == null) {
 			return; // 회원가입 과정을 중단하고 메소드 종료
-		} else if (userId.isEmpty()) {
+		}else if(userDAO.existsUser(userId) == true) {
+			JOptionPane.showMessageDialog(this, "입력한 ID는 중복된 ID 입니다", "경고", JOptionPane.WARNING_MESSAGE);
+			return;
+		}
+		else if (userId.isEmpty()) {
 			JOptionPane.showMessageDialog(this, "입력한 ID가 올바르지 않습니다", "경고", JOptionPane.WARNING_MESSAGE);
 			return; // 사용자가 입력을 하지 않고 '확인'을 누른 경우, 경고 메시지를 보여주고 메소드 종료
 		}
