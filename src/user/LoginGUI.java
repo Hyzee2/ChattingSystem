@@ -30,20 +30,25 @@ public class LoginGUI extends JFrame { // 로그인 창 만들기
 
 		// this.users = this.userDAO.selectAllUsers();
 
-		JPanel panel = new JPanel();
-		panel.setLayout(new GridLayout(4, 1));
+		JPanel panel1 = new JPanel();
+		panel1.setLayout(new GridLayout(8, 1));
+		panel1.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // 위, 왼쪽, 아래, 오른쪽 여백 설정
 
 		JLabel userIDLabel = new JLabel("ID:");
-		panel.add(userIDLabel);
+		panel1.add(userIDLabel);
 
 		userIDField = new JTextField();
-		panel.add(userIDField);
+		panel1.add(userIDField);
 
 		JLabel passwordLabel = new JLabel("Password:");
-		panel.add(passwordLabel);
+		panel1.add(passwordLabel);
 
-		passwordField = new JPasswordField(20);
-		panel.add(passwordField);
+		passwordField = new JPasswordField();
+		panel1.add(passwordField);
+
+		JPanel panel2 = new JPanel();
+		panel2.setLayout(new FlowLayout());
+		panel2.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // 위, 왼쪽, 아래, 오른쪽 여백 설정
 
 		loginButton = new JButton("Login"); // 버튼 생성
 		loginButton.addActionListener(new ActionListener() { // 기능구현 가능한 리스너 붙이기
@@ -57,7 +62,7 @@ public class LoginGUI extends JFrame { // 로그인 창 만들기
 				}
 			}
 		});
-		panel.add(loginButton); // 버튼 붙이기
+		panel2.add(loginButton); // 버튼 붙이기
 
 		signUpButton = new JButton("회원가입하기");
 		signUpButton.addActionListener(new ActionListener() {
@@ -67,9 +72,15 @@ public class LoginGUI extends JFrame { // 로그인 창 만들기
 			}
 
 		});
-		panel.add(signUpButton);
+		panel2.add(signUpButton);
+
+		JPanel panel = new JPanel();
+		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+		panel.add(panel1);
+		panel.add(panel2);
 
 		getContentPane().add(panel);
+
 		setVisible(true);
 	}
 
@@ -86,6 +97,7 @@ public class LoginGUI extends JFrame { // 로그인 창 만들기
 				foundUser = user;
 				break;
 			}
+
 		}
 
 		if (foundUser.getUserId().equals("admin") && foundUser.getPassword().equals("123")) { // 관리자인 경우 관리자 페이지로 넘어감
@@ -102,10 +114,9 @@ public class LoginGUI extends JFrame { // 로그인 창 만들기
 				UserGUI userGUI = new UserGUI(foundUser, true); // 로그인한 본인의 프로필 화면으로 넘어감
 				userGUI.setVisible(true);
 				dispose(); // 로그인 화면 닫기
-				
-			} else 
+
+			} else
 				JOptionPane.showMessageDialog(this, "id 혹은 pw가 일치하지 않습니다.");
-			
 
 		}
 

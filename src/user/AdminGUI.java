@@ -66,8 +66,9 @@ public class AdminGUI extends JFrame {
 		outButton = new JButton("회원 강퇴"); // 버튼 생성
 		outButton.addActionListener(new ActionListener() { // 기능구현 가능한 리스너 붙이기
 			@Override
-			public void actionPerformed(ActionEvent e) { // 아직 수정 중...
+			public void actionPerformed(ActionEvent e) { 
 				outData(); // 기능 메소드
+				// 강퇴당한 사용자의 채팅창 
 			}
 		});
 		panel.add(outButton); // 회원 강퇴 버튼 붙이기
