@@ -99,7 +99,7 @@ public class UserDAO { // Users 테이블, Frineds 테이블과의 연동 관리
 	 * 입력받은 userId가 회원인지 조회
 	 * 
 	 * @param userId
-	 * @return
+	 * @return true: 회원정보에 있다. 
 	 */
 	public boolean existsUser(String userId) {
 		String targetUserId = "";
