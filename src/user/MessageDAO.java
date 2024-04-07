@@ -44,22 +44,14 @@ public class MessageDAO { // Message 테이블과의 연동 관리
 		}
 	}
 
-//	public void searchMsg() { // Message 데이터 모두 조회 
-//		try (PreparedStatement pstmt = conn.prepareStatement(SELECT_MESSAGE)){
-//			ResultSet rs = pstmt.executeQuery();
-//			while(rs.next()) {
-//				int messageId = rs.getInt(1);
-//				int roomId = rs.getInt(2);
-//				String senderId = rs.getString(3);
-//				String content = rs.getString(4);
-//				Timestamp timestamp = rs.getTimestamp(5);
-//			}
-//		}catch(SQLException e) {
-//			e.printStackTrace();
-//		}
-//	}
-
-	public void inputMessage(String messageText, int roomId, String senderId) { // Message 테이블에 데이터 insert 하는 메소드
+	/**
+	 * 메시지 전송 시 Message 테이블에 업데이트
+	 * 
+	 * @param messageText
+	 * @param roomId
+	 * @param senderId
+	 */
+	public void inputMessage(String messageText, int roomId, String senderId) {
 
 		try (PreparedStatement pstmt = conn.prepareStatement(UPDATE_MESSAGE)) {
 			pstmt.setInt(1, roomId);
@@ -73,7 +65,13 @@ public class MessageDAO { // Message 테이블과의 연동 관리
 
 	}
 
-	public List<LocalDate> searchDate(int roomId) { // 해당 채팅방의 날짜 정보 조회
+	/**
+	 * 참여한 채팅방의 메시지들의 날짜 정보 조회
+	 * 
+	 * @param roomId
+	 * @return times
+	 */
+	public List<LocalDate> searchDate(int roomId) {
 		List<LocalDate> times = new ArrayList<>();
 		try (PreparedStatement pstmt = conn.prepareStatement(WHAT_DATE)) {
 			pstmt.setInt(1, roomId);
@@ -81,8 +79,8 @@ public class MessageDAO { // Message 테이블과의 연동 관리
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
 				// 'date'라는 별칭으로 조회
-	            Date date = rs.getDate("date");
-	            LocalDate localDate = date.toLocalDate();
+				Date date = rs.getDate("date");
+				LocalDate localDate = date.toLocalDate();
 
 				times.add(localDate);
 			}
@@ -96,9 +94,10 @@ public class MessageDAO { // Message 테이블과의 연동 관리
 	}
 
 	/**
-	 * 해당 채팅방의 날짜별로 채팅 내용 조회하는 기능  
+	 * 해당 채팅방의 날짜별로 채팅 내용 조회하는 기능
+	 * 
 	 * @param date, roomId
-	 * @return senderId, content가 담긴 message 객체의 리스트 반환 
+	 * @return senderId, content가 담긴 message 객체의 리스트 반환
 	 */
 	public List<Message> getMessage(LocalDate date, int roomId) {
 		List<Message> messages = new ArrayList<>();
@@ -106,18 +105,24 @@ public class MessageDAO { // Message 테이블과의 연동 관리
 			pstmt.setDate(1, Date.valueOf(date)); // LocalDate를 SQL Date로 변환
 			pstmt.setInt(2, roomId);
 			ResultSet rs = pstmt.executeQuery();
-	        while (rs.next()) {
-	            String senderId = rs.getString("senderId");
-	            String content = rs.getString("content");
-	            messages.add(new Message(senderId, content));
-	        }
+			while (rs.next()) {
+				String senderId = rs.getString("senderId");
+				String content = rs.getString("content");
+				messages.add(new Message(senderId, content));
+			}
 		} catch (SQLException e) {
-	        e.printStackTrace();
-	    }
-	    return messages;
+			e.printStackTrace();
+		}
+		return messages;
 	}
 
-	public List<Message> searchMessage(int roomId) { // 채팅방별 senderId와 message를 불러오는 메소드 /
+	/**
+	 * 채팅방별 보낸사람 Id와 채팅내용 조회
+	 * 
+	 * @param roomId
+	 * @return messages : senderId + message
+	 */
+	public List<Message> searchMessage(int roomId) {
 		List<Message> messages = new ArrayList<>(); // 추가를 위해 arrayList 선언
 
 		try (PreparedStatement pstmt = conn.prepareStatement(SELECT_ROOM_MESSAGE)) {
@@ -142,7 +147,13 @@ public class MessageDAO { // Message 테이블과의 연동 관리
 		return this.messages = messages;
 	}
 
-	public List<String> searchSender(int roomId) { // 채팅방별 보낸 사람 아이디가 누구인지 조회하는 메소드
+	/**
+	 * 채팅방별 senderId가 본인 여부 조회
+	 * 
+	 * @param roomId
+	 * @return senderIds : 채팅방별 존재하는 senderId의 목록들 반환
+	 */
+	public List<String> searchSender(int roomId) {
 		String targetSenderId = "";
 		List<String> senderIds = new ArrayList<>();
 

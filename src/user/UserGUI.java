@@ -89,13 +89,23 @@ public class UserGUI extends JFrame { // 사용자 프로필이 뜨는 화면 �
 
 	}
 
+	/**
+	 * 현재 사용자가 속한 채팅방 목록을 가져옴 
+	 * @param user
+	 * @throws SQLException
+	 */
 	private void openWaitingRoomGUI(User user) throws SQLException {
-		// 현재 사용자가 속한 채팅방 목록을 가져옴
+		
 		List<String> roomlist = chatroomDAO.searchRoomList(user.getUserId());
 
 		new WaitingRoomGUI(roomlist, user, true).setVisible(true); // 채팅방 목록과 사용자 정보를 포함하여 WaitingRoomGUI 열기
 	}
 
+	/**
+	 * 현재 사용자의 프로필 이름을 변경할 수 있는 기능 
+	 * @param user
+	 * @throws SQLException
+	 */
 	private void openEditProfileDialog(User user) throws SQLException {
 		String newUsername = JOptionPane.showInputDialog(this, "프로필 수정하기:");
 		if (newUsername != null && !newUsername.isEmpty()) {
@@ -107,20 +117,5 @@ public class UserGUI extends JFrame { // 사용자 프로필이 뜨는 화면 �
 		}
 	}
 
-//    private void startChat() throws SQLException { //대화를 시작하려면 새로운 Chatroom 정보 생성(roomId, roomname) 
-//        
-//    	Integer roomId = chatroomDAO.searchRoomId(user.getUserId());
-//    	
-//    	if(roomId != null) { // 기존 채팅방이 있으면 기존 채팅방 화면 불러오기  
-//    		ChatRoomGUI chatRoomGUI = new ChatRoomGUI(user, roomId);
-//    		chatRoomGUI.setVisible(true);   
-//    		
-//    	}else {// 기존 채팅방이 없으면 새로운 채팅방 생성 
-//    		// Chatroom 테이블에 insert into 
-//    		chatroomDAO.inputChatRoom();
-//    	}
-//        
-//        dispose(); // 현재 창 닫기
-//    }
 
 }

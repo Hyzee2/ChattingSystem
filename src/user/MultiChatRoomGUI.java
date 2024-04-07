@@ -40,9 +40,7 @@ public class MultiChatRoomGUI extends JFrame implements ActionListener {
 	private Socket socket;
 	private ObjectInputStream ois;
 	private ObjectOutputStream oos;
-//	private boolean isSelf;
 
-	// 생성자
 	public MultiChatRoomGUI(User user, List<String> selectedMembers, String selectedRoomname, boolean isSelf)
 			throws SQLException, IOException, BadLocationException {
 		// DAO 및 사용자 정보 초기화
@@ -137,7 +135,11 @@ public class MultiChatRoomGUI extends JFrame implements ActionListener {
 
 	}
 
-	// 메시지 전송 메소드
+	/**
+	 * 입력받은 메시지를 전송하는 메소드
+	 * 
+	 * @throws BadLocationException
+	 */
 	private void sendMessage() throws BadLocationException {
 		String message = messageField.getText();
 		String senderId = "";
@@ -154,10 +156,11 @@ public class MultiChatRoomGUI extends JFrame implements ActionListener {
 				e.printStackTrace();
 			}
 		}
-//		displayMessage(message, senderId);
 	}
 
-	// 애플리케이션 종료 메소드
+	/**
+	 * 프로그램 종료 메소드
+	 */
 	public void exitApplication() {
 		try {
 			oos.writeObject(currentUser.getUserId() + "#exit");
@@ -168,7 +171,9 @@ public class MultiChatRoomGUI extends JFrame implements ActionListener {
 //		System.exit(0); // 아예 시스템 종료 
 	}
 
-	// 날짜별 대화내용 검색 메소드
+	/**
+	 * 날짜별 채팅 내용 검색 메소드
+	 */
 	public void showDateMSG() {
 		List<LocalDate> dateList = messageDAO.searchDate(roomId);
 		// 날짜 리스트를 String 배열로 변환
@@ -185,6 +190,9 @@ public class MultiChatRoomGUI extends JFrame implements ActionListener {
 		}
 	}
 
+	/**
+	 * 선택된 날짜의 채팅내용을 보여주는 메소드
+	 */
 	public void showMessages() {
 		if (selectedDate != null) {
 			List<Message> messages = messageDAO.getMessage(selectedDate, roomId);
@@ -209,7 +217,14 @@ public class MultiChatRoomGUI extends JFrame implements ActionListener {
 
 	}
 
-	public int loadMessages(String selectedRoomname) throws BadLocationException { // 채팅방 db에서 대화내용 불러오기
+	/**
+	 * Messages DB에서 채팅내용 불러오는 메소드
+	 * 
+	 * @param selectedRoomname
+	 * @return
+	 * @throws BadLocationException
+	 */
+	public int loadMessages(String selectedRoomname) throws BadLocationException {
 
 		for (Message message : messages) {
 			String senderId = message.getSenderId();
@@ -238,29 +253,17 @@ public class MultiChatRoomGUI extends JFrame implements ActionListener {
 			// 메시지와 함께 줄바꿈 문자 추가
 			doc.insertString(doc.getLength(), formattedMessage, null); // 스타일 속성을 null로 설정하여 기본 스타일 적용
 		}
-//		String targetSenderId = "";
-//		
-//		SimpleAttributeSet attrs = new SimpleAttributeSet();
-//		
-//		for (int i =  i < senderIds.size(); i++) { // senderId 리스트들의 크기만큼 반복문 실행 
-//			targetSenderId = senderIds.get(i); // targetId에 넣어준다 
-//			if (targetSenderId.equals(currentUser.getUserId())) { // 현재 로그인한 id와 targetId가 동일하면 본인이 보낸 메시지인 것 
-//				StyleConstants.setAlignment(attrs, StyleConstants.ALIGN_RIGHT); // 오른쪽 정렬 
-//				message = message + " : 나";
-//			} else {
-//				StyleConstants.setAlignment(attrs, StyleConstants.ALIGN_LEFT); // 왼쪽 정렬  
-//				message = targetSenderId + " : " + message;
-//			}
-//			if (doc != null) {
-//				doc.insertString(doc.getLength(), message + "\n", attrs);
-//				doc.setParagraphAttributes(doc.getLength() - 1, 1, attrs, false);
-//			}
-//		}
-//		return this.senderId = targetSenderId;
+
 	}
 
-	private void sendServer(String senderId, String selectedRoomname) throws SQLException { // 사용자가 채팅창에서 입력한 값을 db로 보내는
-																							// 메소드
+	/**
+	 * 입력한 채팅 내용을 DB로 보내는 메소드
+	 * 
+	 * @param senderId
+	 * @param selectedRoomname
+	 * @throws SQLException
+	 */
+	private void sendServer(String senderId, String selectedRoomname) throws SQLException {
 		String messageText = messageField.getText();
 		System.out.println(messageText);
 		int roomId = chatroomDAO.searchRoomId(selectedRoomname);
